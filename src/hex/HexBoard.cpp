@@ -22,10 +22,10 @@ HexBoard::HexBoard(int width, int height, const ICEngine& ice,
       m_ice(&ice),
       m_groups(),
       m_patterns(m_brd),
-      m_use_vcs(true),
-      m_use_ice(true),
-      m_use_decompositions(true),
-      m_backup_ice_info(true),
+      m_use_vcs(false),
+      m_use_ice(false),
+      m_use_decompositions(false),
+      m_backup_ice_info(false),
       m_builder_param(param)
 {
     GroupBuilder::Build(m_brd, m_groups);
@@ -289,7 +289,9 @@ void HexBoard::PopHistory()
     }
     m_inf = hist.inf;
     m_groups = hist.groups;
-    RevertVCs();
+    if(m_use_vcs){
+    	RevertVCs();
+    }
 }
 
 //----------------------------------------------------------------------------

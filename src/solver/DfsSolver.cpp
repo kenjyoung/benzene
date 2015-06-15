@@ -68,10 +68,10 @@ HexColor DfsSolver::Solve(const HexState& state, HexBoard& brd,
     m_state.reset(new HexState(state));
     m_workBrd = &brd;
 
-    // DfsSolver currently cannot handle permanently inferior cells.
-    if (m_workBrd->ICE().FindPermanentlyInferior())
+    //// DfsSolver currently cannot handle permanently inferior cells.
+    /*if (m_workBrd->ICE().FindPermanentlyInferior())
         throw BenzeneException("Permanently Inferior not supported "
-                               "in DfsSolver!");
+                               "in DfsSolver!");*/
     // Check if state is already solved
     DfsData data;
     bool win = false;
@@ -505,8 +505,8 @@ void DfsSolver::HandleProof(const PointSequence& variation,
                 += old_proof.count() - solution.proof.count();
         }
     }
-    // Verify proof touches both of winner's edges
-    if (!BoardUtil::ConnectedOnBitset(m_workBrd->Const(), solution.proof, 
+    // Verify proof touches both of winner's edges (removed for rex, although should it have to be?)
+    /*if (!BoardUtil::ConnectedOnBitset(m_workBrd->Const(), solution.proof,
                                        HexPointUtil::colorEdge1(winner),
                                        HexPointUtil::colorEdge2(winner)))
         throw BenzeneException()
@@ -517,7 +517,7 @@ void DfsSolver::HandleProof(const PointSequence& variation,
             << m_workBrd->Write(old_proof) << '\n'
             << *m_workBrd << '\n'
             << color << " to play.\n"
-            << "PV: " << HexPointUtil::ToString(variation) << '\n';
+            << "PV: " << HexPointUtil::ToString(variation) << '\n';*/
 
     /** @todo HANDLE BEST MOVES PROPERLY! 
         This can only happen if the mustplay goes empty in an internal

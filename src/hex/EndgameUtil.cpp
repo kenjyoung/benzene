@@ -229,7 +229,7 @@ bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color,
         proof = StonesInProof(brd, color);
         return true;
     }
-    bitset_t carrier;
+    /*bitset_t carrier;
     if (brd.Cons(color).SmallestSemiCarrier(carrier))
     {        
         proof = carrier | StonesInProof(brd, color);
@@ -239,7 +239,7 @@ bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color,
     {
         proof = carrier | StonesInProof(brd, color);
 	return true;
-    }
+    }*/
     return false;
 }
 
@@ -251,7 +251,7 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
         proof = StonesInProof(brd, !color);
         return true;
     }
-    bitset_t carrier;
+    /*bitset_t carrier;
     if (brd.Cons(!color).SmallestFullCarrier(carrier))
     {
         proof = carrier | StonesInProof(brd, !color);
@@ -261,7 +261,7 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
     {
         proof = brd.GetPosition().GetEmpty() | StonesInProof(brd, !color);
         return true;
-    }
+    }*/
     return false;
 }
 
