@@ -98,7 +98,8 @@ HexColor Groups::GetWinner() const
     for (BWIterator c; c; ++c) 
         if (m_group_index[HexPointUtil::colorEdge1(*c)] ==
             m_group_index[HexPointUtil::colorEdge2(*c)])
-            return *c;
+        	//winner changed in order to play rex
+            return HexColorUtil::otherColor(*c);
     return EMPTY;
 }
 
