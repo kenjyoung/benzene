@@ -875,7 +875,7 @@ size_t DfpnSolver::CreateData(DfpnData& data)
     std::vector<std::pair<HexEval, HexPoint> > mvsc;
     for (BitsetIterator it(childrenBitset); it; ++it)
     {
-        HexEval score = resist.Score(*it);
+        HexEval score = -resist.Score(*it);
         mvsc.push_back(std::make_pair(-score, *it));
     }
     stable_sort(mvsc.begin(), mvsc.end());
