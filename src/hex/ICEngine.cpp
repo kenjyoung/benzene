@@ -750,8 +750,9 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
     StoneBoard oldBoard(groups.Board());
 #endif
     SgTimer timer;
-
-    ComputeFillin(color, groups, pastate, out);
+    //modified for rex, only compute dead for now
+    FindDead(pastate, groups.Board().GetEmpty());
+    /*ComputeFillin(color, groups, pastate, out);
 
     {
         // Note: We consider vulnerable cells when matching reversible patterns
@@ -777,7 +778,7 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
             LogFine() << "Found " << found 
                       << " cells vulnerable to opponent moves.\n";
         }
-    }
+    }*/
     
     LogFine() << "  " << timer.GetTime() << "s to find inferior cells.\n";
 

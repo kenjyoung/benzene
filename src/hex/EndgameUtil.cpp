@@ -86,14 +86,26 @@ bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
 
 bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 {
-    bitset_t consider = VCUtil::GetMustplay(brd, color);
+	bitset_t consider;
+	//modified for rex solver
+    /*bitset_t consider = VCUtil::GetMustplay(brd, color);
     const InferiorCells& inf = brd.GetInferiorCells();
     consider = consider - inf.Vulnerable()
                         - inf.Reversible()
                         - inf.Dominated()
-          - ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
-    if (brd.GetPosition().IsSelfRotation())
-        consider = RemoveRotations(brd.GetPosition(), consider);
+          - ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);*/
+	bitset_t dead = brd.GetDead();
+	//if there are any dead cells they are provably equivalent and superior moves so just return one to play
+	if(dead.any()){
+		consider = EMPTY_BITSET;
+		consider.set(dead[0]);
+	}
+	//otherwise consider every move (for now)
+	else{
+		consider = brd.GetPosition().GetEmpty();
+	}
+	if (brd.GetPosition().IsSelfRotation())
+	        consider = RemoveRotations(brd.GetPosition(), consider);
     return consider;
 }
 
