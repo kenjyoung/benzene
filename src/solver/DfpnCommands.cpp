@@ -205,6 +205,7 @@ void DfpnCommands::CmdParam(HtpCommand& cmd)
 /** Solves the current state with dfpn using the current hashtable. */
 void DfpnCommands::CmdSolveState(HtpCommand& cmd)
 {
+	SgTimer timer;
     cmd.CheckNuArgLessEqual(3);
     HexColor colorToMove = m_game.Board().WhoseTurn();
     if (cmd.NuArg() >= 1)
@@ -230,6 +231,7 @@ void DfpnCommands::CmdSolveState(HtpCommand& cmd)
         = m_solver.StartSearch(HexState(m_game.Board(), colorToMove), brd, 
                                m_positions, pv, maxBounds);
     cmd << winner;
+    LogInfo() << "Total Elapsed Time: " << timer.GetTime() << '\n';
 }
 
 /** Finds all winning moves in the current state with dfpn,
