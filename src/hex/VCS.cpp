@@ -541,8 +541,9 @@ void VCS::Build(VCBuilderParam& param,
 
     ComputeCapturedSets(patterns);
     AddBaseVCs();
-    if (m_param->use_patterns)
-        AddPatternVCs();
+    //disabled for rex, can add in later if confident they are valid
+    /*if (m_param->use_patterns)
+        AddPatternVCs();*/
     DoSearch();
 
     LogFine() << "  " << timer.GetTime() << "s to build vcs.\n";
@@ -1143,11 +1144,12 @@ void VCS::OrSemis(HexPoint x, HexPoint y)
     BenzeneAssert(xy_semis);
     AndList *xy_fulls = m_fulls[x][y];
     m_statistics.doOrs++;
-    std::vector<bitset_t> new_fulls = m_param->limit_or ?
+    //modified for rex
+    std::vector<bitset_t> new_fulls = VC2Or(*xy_semis);/*m_param->limit_or ?
         VCOr(*xy_semis, xy_fulls ? xy_fulls->GetAllIntersection() : bitset_t().set(),
              m_capturedSet[x], m_capturedSet[y]) :
         VCOr(*xy_semis, xy_fulls ? *xy_fulls : CarrierList(),
-             m_capturedSet[x], m_capturedSet[y]);
+             m_capturedSet[x], m_capturedSet[y]);*/
     xy_semis->MarkAllProcessed();
     if (new_fulls.empty())
         return;
@@ -1160,6 +1162,23 @@ void VCS::OrSemis(HexPoint x, HexPoint y)
             it != new_fulls.end(); ++it)
         if (xy_fulls->TryAdd(*it, m_param->limit_fulls))
             m_fulls_and_queue.Push(Full(x, y, *it));
+}
+
+//compute only 2-or connections (pairing strategies for rex)
+vector<bitset_t> benzene::VC2Or(CarrierList semis)
+{
+	vector<bitset_t> res;
+	for (CarrierList::Iterator i(semis); i; ++i){
+		CarrierList::Iterator j(i);
+		for (++j; j; ++j){
+			if(!j.Old())
+				if(!(i.Carrier()&j.Carrier()).any()){
+					bitset_t new_con = i.Carrier()|j.Carrier();
+					res.push_back(new_con);
+				}
+		}
+	}
+	return res;
 }
 
 vector<bitset_t> benzene::VCOr(CarrierList semis, bitset_t cands,
