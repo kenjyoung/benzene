@@ -97,7 +97,7 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 	bitset_t dead = brd.GetDead();
 	//if there are any dead cells they are provably equivalent and superior moves so just return one to play
 	if(dead.any()){
-		consider = EMPTY_BITSET;
+		consider = bitset_t();
 		consider.set(dead[0]);
 	}
 	//otherwise consider every move (for now)
