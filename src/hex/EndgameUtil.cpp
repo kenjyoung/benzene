@@ -236,44 +236,54 @@ HexPoint PlayLostGame(const HexBoard& brd, HexColor color)
 bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color, 
                             bitset_t& proof)
 {
+	/*modified for rex*/
     if (brd.GetGroups().GetWinner() == color)
     {
         proof = StonesInProof(brd, color);
         return true;
     }
-    /*bitset_t carrier;
-    if (brd.Cons(color).SmallestSemiCarrier(carrier))
-    {        
-        proof = carrier | StonesInProof(brd, color);
-	return true;
-    }
-    if (brd.Cons(color).SmallestFullCarrier(carrier))
+    bitset_t carrier;
+    //if opponent pairing exists we win
+    if (brd.Cons(!color).SmallestFullCarrier(carrier))
     {
         proof = carrier | StonesInProof(brd, color);
-	return true;
-    }*/
+        return true;
+    }
+    if (brd.Cons(!color).SmallestSemiCarrier(carrier))
+    {
+    	//if even number of cells remain and opponent pre-pairing exist we win
+    	if(brd.GetPosition().GetEmpty().count()%2==0){
+    		proof = carrier | StonesInProof(brd, color);
+    		return true;
+    	}
+    }
     return false;
 }
 
 bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color, 
                              bitset_t& proof)
 {
+	/*modified for rex*/
     if (brd.GetGroups().GetWinner() == !color)
     {
         proof = StonesInProof(brd, !color);
         return true;
     }
-    /*bitset_t carrier;
-    if (brd.Cons(!color).SmallestFullCarrier(carrier))
+    bitset_t carrier;
+    //if we have a pairing-strat we lose
+    if (brd.Cons(color).SmallestFullCarrier(carrier))
     {
         proof = carrier | StonesInProof(brd, !color);
 	return true;
     }
-    if (ComputeConsiderSet(brd, color).none())
+    if (brd.Cons(color).SmallestSemiCarrier(carrier))
     {
-        proof = brd.GetPosition().GetEmpty() | StonesInProof(brd, !color);
-        return true;
-    }*/
+    	//if oddnumber of cells remain and we have pre-pairing we lose
+    	if(brd.GetPosition().GetEmpty().count()%2==1){
+    		proof = carrier | StonesInProof(brd, color);
+    		return true;
+    	}
+    }
     return false;
 }
 
