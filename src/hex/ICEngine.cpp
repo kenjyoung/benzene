@@ -526,6 +526,57 @@ void ICEngine::LoadPatterns()
 
 //----------------------------------------------------------------------------
 
+//only compute captured cells (used for rex)
+std::size_t ICEngine::ComputeCaptured(Groups& groups, PatternState& pastate,
+        							  InferiorCells& inf,
+									  HexColorSet colors_to_capture) const
+{
+	{
+	    StoneBoard& brd = groups.Board();
+	    // find dead and captured cells and fill them in.
+	    std::size_t count = 0;
+	    while (true)
+	    {
+	        // search for black captured cells; if some are found,
+	        // fill them in and iterate again.
+	        {
+	            bitset_t black;
+	            if (HexColorSetUtil::InSet(BLACK, colors_to_capture))
+	                black = FindCaptured(pastate, BLACK, brd.GetEmpty());
+	            if (black.any())
+	            {
+	                count += black.count();
+	                inf.AddCaptured(BLACK, black);
+	                brd.AddColor(BLACK, black);
+	                pastate.Update(black);
+	                continue;
+	            }
+	        }
+
+	        // search for white captured cells; if some are found, fill
+	        // them in and go back to look for more black captured.
+	        {
+	            bitset_t white;
+	            if (HexColorSetUtil::InSet(WHITE, colors_to_capture))
+	                white = FindCaptured(pastate, WHITE, brd.GetEmpty());
+	            if (white.any())
+	            {
+	                count += white.count();
+	                inf.AddCaptured(WHITE, white);
+	                brd.AddColor(WHITE, white);
+	                pastate.Update(white);
+	                continue;
+	            }
+	        }
+	        // did not find any fillin, so abort.
+	        break;
+	    }
+	    if (count)
+	        GroupBuilder::Build(brd, groups);
+	    return count;
+	}
+}
+
 std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
                                           InferiorCells& inf, 
                                           HexColorSet colors_to_capture) const
@@ -705,7 +756,10 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                              HexColorSet colors_to_capture) const
 {
     out.Clear();
-    bool considerCliqueCutset = true;
+    //only filling captured cell for rex (for now)
+    //TODO: double check all capture patterns are appropriate for rex
+    ComputeCaptured(groups, pastate, out, colors_to_capture);
+    /*bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -715,7 +769,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             count = 0;
             count += ComputeDeadCaptured(groups, pastate, out,
                                          colors_to_capture);
-            count += FillinPermanentlyInferior(groups, pastate, color, out, 
+            count += FillinPermanentlyInferior(groups, pastate, color, out,
                                                colors_to_capture);
             count += FillinPermanentlyInferior(groups, pastate, !color, out, 
                                                colors_to_capture);
@@ -737,8 +791,8 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             break;
         considerCliqueCutset = false;
     }
-    if (!m_iterative_dead_regions)
-        CliqueCutsetDead(groups, pastate, out);
+    /*if (!m_iterative_dead_regions)
+        CliqueCutsetDead(groups, pastate, out);*/
 }
 
 void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
@@ -750,11 +804,11 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
     StoneBoard oldBoard(groups.Board());
 #endif
     SgTimer timer;
-    //modified for rex, only compute dead for now
+    //modified for rex
     FindDead(pastate, groups.Board().GetEmpty());
-    /*ComputeFillin(color, groups, pastate, out);
+    ComputeFillin(color, groups, pastate, out);
 
-    {
+    /*{
         // Note: We consider vulnerable cells when matching reversible patterns
         //       since the captured pattern applies to the entire carrier, not
         //       just the centre cell of the pattern.

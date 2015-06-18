@@ -62,6 +62,11 @@ public:
                                     InferiorCells& inf, 
                                     HexColorSet colors_to_capture) const;
     
+    /**Used for rex, compute and fillin only captured cells (where captured should be defined appropriately for rex)*/
+    std::size_t ComputeCaptured(Groups& groups, PatternState& pastate,
+            							  InferiorCells& inf,
+    									  HexColorSet colors_to_capture) const;
+
     // @} // @name
 
     //------------------------------------------------------------------------
