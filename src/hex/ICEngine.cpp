@@ -500,7 +500,7 @@ ICEngine::ICEngine()
       m_find_three_sided_dead_regions(false),
       m_iterative_dead_regions(false)
 {
-    LoadHandCodedPatterns();
+    //LoadHandCodedPatterns();
     LoadPatterns();
 }
 
@@ -533,7 +533,7 @@ std::size_t ICEngine::ComputeCaptured(Groups& groups, PatternState& pastate,
 {
 	{
 	    StoneBoard& brd = groups.Board();
-	    // find dead and captured cells and fill them in.
+	    // find captured cells and fill them in.
 	    std::size_t count = 0;
 	    while (true)
 	    {
@@ -791,7 +791,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             break;
         considerCliqueCutset = false;
     }
-    /*if (!m_iterative_dead_regions)
+    if (!m_iterative_dead_regions)
         CliqueCutsetDead(groups, pastate, out);*/
 }
 

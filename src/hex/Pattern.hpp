@@ -63,7 +63,7 @@ _BEGIN_BENZENE_NAMESPACE_
     - BLACK the black stones in the slice.
     - WHITE the white stones in the slice. 
     - MARKED1 first set of marked cells in the slice. 
-    - MARKED1 second set of marked cells in the slice.
+    - MARKED2 second set of marked cells in the slice.
 
     All features must be a subset of CELLS. BLACK, WHITE, MARKED1 and
     MARKED2 must all be pairwise disjoint.
