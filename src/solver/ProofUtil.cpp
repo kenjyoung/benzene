@@ -17,7 +17,8 @@ bitset_t ProofUtil::MaximumProofSet(const HexBoard& brd, HexColor toPlay)
 {
     return brd.GetPosition().GetEmpty()
         | brd.GetPosition().GetPlayed(toPlay)
-        | brd.GetInferiorCells().DeductionSet(toPlay);
+		| brd.GetPosition().GetPlayed(!toPlay);
+        //| brd.GetInferiorCells().DeductionSet(toPlay);
 }
 
 bitset_t ProofUtil::InitialProofForOpponent(const HexBoard& brd, 

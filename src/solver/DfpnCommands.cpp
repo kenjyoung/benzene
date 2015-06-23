@@ -241,10 +241,11 @@ void DfpnCommands::CmdFindWinning(HtpCommand& cmd)
     cmd.CheckNuArg(1);
     HexColor colorToMove = HtpUtil::ColorArg(cmd, 0);
     HexBoard& brd = m_env.SyncBoard(m_game.Board());
-    brd.ComputeAll(colorToMove);
-    bitset_t consider = (EndgameUtil::IsDeterminedState(brd, colorToMove) ?
+    //brd.ComputeAll(colorToMove);
+    bitset_t consider = brd.GetPosition().GetEmpty();
+    /*(EndgameUtil::IsDeterminedState(brd, colorToMove) ?
                          brd.GetPosition().GetEmpty() :
-                         EndgameUtil::MovesToConsider(brd, colorToMove));
+                         EndgameUtil::MovesToConsider(brd, colorToMove));*/
     bitset_t winning;
     SgTimer timer;
 

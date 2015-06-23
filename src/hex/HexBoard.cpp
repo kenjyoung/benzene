@@ -25,7 +25,7 @@ HexBoard::HexBoard(int width, int height, const ICEngine& ice,
       m_use_vcs(false),
       m_use_ice(true),
       m_use_decompositions(false),
-      m_backup_ice_info(true),
+      m_backup_ice_info(false),
       m_builder_param(param)
 {
     GroupBuilder::Build(m_brd, m_groups);
