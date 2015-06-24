@@ -67,7 +67,7 @@ for name, test in outcome_tests:
 	else:
 		fail_count+=1
 		print(FAILCOLOR + name + " test failed... :(" + ENDCOLOR)
-		print("Expected winner "+test[2]+" did not match computed.\n")
+		print("Expected winner ("+test[2]+") did not match computed.\n")
 
 for name, test in wins_tests:
 	result, false_losses, false_wins = testwins(mohex, test[0], test[1], test[2], test[3])
