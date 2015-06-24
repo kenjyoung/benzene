@@ -901,13 +901,14 @@ bitset_t DfpnSolver::ChildrenToPrune(DfpnChildren& children,
                                      HexPoint bestMove, bitset_t maxProofSet)
 {
     bitset_t res;
-    maxProofSet.set(bestMove);
+    /*maxProofSet.set(bestMove);
     for (size_t i = 0; i < children.Size(); ++i)
         if (!maxProofSet.test(children.FirstMove(i)))
             res.set(i);
     if (res.any())
-        m_prunedSiblingStats.Add(float(res.count()));
+        m_prunedSiblingStats.Add(float(res.count()));*/
     return res;
+
 }
 
 void DfpnSolver::UpdateSolvedBestMove(DfpnData& data,
@@ -1013,6 +1014,7 @@ size_t DfpnSolver::MID(const DfpnBounds& maxBounds,
         // Recurse on best child
         if (m_useGuiFx && depth == 0)
             m_guiFx.SetPV(data.m_bestMove, childrenData[bestIndex].GetBounds());
+
         data.m_children.PlayMove(bestIndex, *m_state);
         m_history->Push(data.m_bestMove, currentHash);
         size_t childWork = MID(childMaxBounds, workBound - work,

@@ -53,7 +53,7 @@ outcome_tests.append(("3x3", [3, [], "black"]))
 #wins test format: (<name>, [<boardsize>, <opening moves>, <expected winning moves>, <expected losing moves>])
 wins_tests = []
 wins_tests.append(("2x2",[2, [], ["a1","b2"], ["b1","a2"]]))
-#wins_tests.append(("4x4", [4, [], ["a1","a2","a3","a4","b1","b2","b4","c1","c3","c4","d1","d2","d3","d4"], ["b3","c2"]]))
+wins_tests.append(("4x4", [4, [], ["a1","a2","a3","a4","b1","b2","b4","c1","c3","c4","d1","d2","d3","d4"], ["b3","c2"]]))
 wins_tests.append(("3x3 a1", [3, ["a1"], ["a2","a3","b1","b3","c1","c2","c3"], ["b2"]]))
 wins_tests.append(("3x3 b1", [3, ["b1"], ["a1","a2","a3","b2","b3","c1","c2","c3"], []]))
 wins_tests.append(("3x3 c1", [3, ["c1"], ["a1","a2","a3","b1","b2","b3","c2","c3"], []]))
