@@ -563,6 +563,19 @@ HexColor DfpnSolver::StartSearch(const HexState& state, HexBoard& board,
         LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
         return w;
     }
+    DfpnData rotdata;
+    StoneBoard rotbrd(state.Position());
+    rotbrd.RotateBoard();
+    HexState rotstate(rotbrd, state.ToPlay());
+    if (DBRead(rotstate, rotdata) && rotdata.m_bounds.IsSolved()){
+    	LogInfo() << "Rotation already solved!\n";
+    	HexColor w = rotdata.m_bounds.IsWinning()
+    	   ? rotstate.ToPlay() : !rotstate.ToPlay();
+    	SolverDBUtil::GetVariation(rotstate, *m_positions, pv);
+    	LogInfo() << w << " wins!\n";
+    	LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
+    	return w;
+    }
 
     m_timer.Start();
     if (m_useGuiFx)
