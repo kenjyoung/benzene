@@ -526,57 +526,6 @@ void ICEngine::LoadPatterns()
 
 //----------------------------------------------------------------------------
 
-//only compute captured cells (used for rex)
-std::size_t ICEngine::ComputeCaptured(Groups& groups, PatternState& pastate,
-        							  InferiorCells& inf,
-									  HexColorSet colors_to_capture) const
-{
-	{
-	    StoneBoard& brd = groups.Board();
-	    // find captured cells and fill them in.
-	    std::size_t count = 0;
-	    while (true)
-	    {
-	        // search for black captured cells; if some are found,
-	        // fill them in and iterate again.
-	        {
-	            bitset_t black;
-	            if (HexColorSetUtil::InSet(BLACK, colors_to_capture))
-	                black = FindCaptured(pastate, BLACK, brd.GetEmpty());
-	            if (black.any())
-	            {
-	                count += black.count();
-	                inf.AddCaptured(BLACK, black);
-	                brd.AddColor(BLACK, black);
-	                pastate.Update(black);
-	                continue;
-	            }
-	        }
-
-	        // search for white captured cells; if some are found, fill
-	        // them in and go back to look for more black captured.
-	        {
-	            bitset_t white;
-	            if (HexColorSetUtil::InSet(WHITE, colors_to_capture))
-	                white = FindCaptured(pastate, WHITE, brd.GetEmpty());
-	            if (white.any())
-	            {
-	                count += white.count();
-	                inf.AddCaptured(WHITE, white);
-	                brd.AddColor(WHITE, white);
-	                pastate.Update(white);
-	                continue;
-	            }
-	        }
-	        // did not find any fillin, so abort.
-	        break;
-	    }
-	    if (count)
-	        GroupBuilder::Build(brd, groups);
-	    return count;
-	}
-}
-
 std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
                                           InferiorCells& inf, 
                                           HexColorSet colors_to_capture) const
@@ -588,14 +537,20 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
     {
         // search for dead; if some are found, fill them in
         // and iterate again.
-        while (true) 
+        while (true)
         {
-            /** @todo This can be optimized quite a bit. */
+           	/**@todo This can be optimized quite a bit.*/
             bitset_t dead = FindDead(pastate, brd.GetEmpty());
+            int deadcount = dead.count();
+            //can safely fillin only only an even number of deadcells in rex
+            if(deadcount%2 == 1){
+            	deadcount-=1;
+            	dead.reset(dead._Find_first());
+            }
             if (dead.none()) 
                 break;
-            count += dead.count();
-            inf.AddDead(dead);
+            count += deadcount;
+            //inf.AddDead(dead);
             brd.AddColor(DEAD_COLOR, dead);
             pastate.Update(dead);
         }
@@ -756,9 +711,8 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                              HexColorSet colors_to_capture) const
 {
     out.Clear();
-    //only filling captured cell for rex (for now)
-    //TODO: double check all capture patterns are appropriate for rex
-    ComputeCaptured(groups, pastate, out, colors_to_capture);
+    //only filling captured and dead cells (in even number) for rex (for now)
+    ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
     /*bool considerCliqueCutset = true;
     while(true)
     {
