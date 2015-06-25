@@ -759,8 +759,13 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
 #endif
     SgTimer timer;
     //modified for rex
-    FindDead(pastate, groups.Board().GetEmpty());
+    //compute fillin already finds dead
+    //FindDead(pastate, groups.Board().GetEmpty());
     ComputeFillin(color, groups, pastate, out);
+    bitset_t consider = groups.Board().GetEmpty();
+    FindDominated(pastate, color, consider, out);
+
+
 
     /*{
         // Note: We consider vulnerable cells when matching reversible patterns
@@ -1029,7 +1034,7 @@ void ICEngine::FindDominated(const PatternState& pastate, HexColor color,
         {
             const std::vector<HexPoint>& moves1 = hits[*p][j].Moves1();
             BenzeneAssert(moves1.size() == 1);
-            inf.AddDominated(*p, moves1[0]);
+            inf.AddDominated(moves1[0], *p);
             // For now, no dominated patterns have carriers
             // Note: this can change in the future if more complex ICE
             // patterns are found

@@ -89,7 +89,6 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 	bitset_t consider;
 	//modified for rex solver
     /*bitset_t consider = VCUtil::GetMustplay(brd, color);
-    const InferiorCells& inf = brd.GetInferiorCells();
     consider = consider - inf.Vulnerable()
                         - inf.Reversible()
                         - inf.Dominated()
@@ -102,7 +101,9 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 	}
 	//otherwise consider every move (for now)
 	else{
+		const InferiorCells& inf = brd.GetInferiorCells();
 		consider = brd.GetPosition().GetEmpty();
+		consider-= inf.Dominated();
 	}
 	if (brd.GetPosition().IsSelfRotation())
 	        consider = RemoveRotations(brd.GetPosition(), consider);
