@@ -495,12 +495,12 @@ ICEngine::ICEngine()
       m_find_all_pattern_killers(true),
       m_find_all_pattern_reversers(false),
       m_find_all_pattern_dominators(false),
-      m_use_handcoded_patterns(true),
+      m_use_handcoded_patterns(false),
       m_backup_opponent_dead(false),
       m_find_three_sided_dead_regions(false),
       m_iterative_dead_regions(false)
 {
-    //LoadHandCodedPatterns();
+    LoadHandCodedPatterns();
     LoadPatterns();
 }
 

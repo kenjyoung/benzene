@@ -18,7 +18,7 @@ using namespace benzene;
 
 VCBuilderParam::VCBuilderParam()
     : and_over_edge(false),
-      use_patterns(true),
+      use_patterns(false),
       use_non_edge_patterns(true),
       incremental_builds(true),
       limit_fulls(true),
@@ -542,8 +542,8 @@ void VCS::Build(VCBuilderParam& param,
     ComputeCapturedSets(patterns);
     AddBaseVCs();
     //disabled for rex, can add in later if confident they are valid
-    /*if (m_param->use_patterns)
-        AddPatternVCs();*/
+    if (m_param->use_patterns)
+        AddPatternVCs();
     DoSearch();
 
     LogFine() << "  " << timer.GetTime() << "s to build vcs.\n";
