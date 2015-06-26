@@ -48,6 +48,15 @@ using namespace benzene;
 
 /** Local functions. */
 namespace {
+bool CheckColorSymmetry(const StoneBoard& brd){
+	bitset_t black = brd.GetColor(BLACK);
+	bitset_t white_mirror1 = BoardUtil::Mirror(brd.Const(),brd.GetPlayed(WHITE));
+	bitset_t white_mirror2 = BoardUtil::Mirror(brd.Const(),BoardUtil::Rotate(brd.Const(),
+                                                  brd.GetPlayed(WHITE)));
+	if(white_mirror1 == black || white_mirror2 == black)
+		return true;
+	return false;
+}
 
 bitset_t ComputeLossesViaStrategyStealingArgument(const StoneBoard& brd,
                                                   HexColor color)
@@ -98,12 +107,15 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 	if(dead.any()){
 		consider = bitset_t();
 		consider.set(dead[0]);
+		return consider;
 	}
 	//otherwise consider every move (for now)
 	else{
 		const InferiorCells& inf = brd.GetInferiorCells();
 		consider = brd.GetPosition().GetEmpty();
 		consider-= inf.Dominated();
+		/*if(brd.GetPosition().GetEmpty().count()%2 == 0)
+			consider -=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);*/
 	}
 	if (brd.GetPosition().IsSelfRotation())
 	        consider = RemoveRotations(brd.GetPosition(), consider);
@@ -250,13 +262,18 @@ bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color,
         proof = carrier | StonesInProof(brd, color);
         return true;
     }
-    if (brd.Cons(!color).SmallestSemiCarrier(carrier))
+    if(brd.GetPosition().GetEmpty().count()%2 == 0 )
     {
-    	//if even number of cells remain and opponent pre-pairing exist we win
-    	if(brd.GetPosition().GetEmpty().count()%2==0){
-    		proof = carrier | StonesInProof(brd, color);
-    		return true;
-    	}
+		//if even number of cells remain and opponent pre-pairing exist we win
+		if (brd.Cons(!color).SmallestSemiCarrier(carrier))
+		{
+			proof = carrier | StonesInProof(brd, color);
+			return true;
+		}
+		//if even number of cells remain and board is color symmetric we win
+		if(CheckColorSymmetry(brd.GetPosition()))
+			return true;
+
     }
     return false;
 }
@@ -277,13 +294,16 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
         proof = carrier | StonesInProof(brd, !color);
 	return true;
     }
-    if (brd.Cons(color).SmallestSemiCarrier(carrier))
-    {
-    	//if oddnumber of cells remain and we have pre-pairing we lose
-    	if(brd.GetPosition().GetEmpty().count()%2==1){
-    		proof = carrier | StonesInProof(brd, color);
-    		return true;
-    	}
+
+    if(brd.GetPosition().GetEmpty().count()%2==1){
+    //if oddnumber of cells remain and we have pre-pairing we lose
+		if (brd.Cons(color).SmallestSemiCarrier(carrier))
+		{
+			proof = carrier | StonesInProof(brd, color);
+			return true;
+		}
+		if(CheckColorSymmetry(brd.GetPosition()))
+			return true;
     }
     return false;
 }
