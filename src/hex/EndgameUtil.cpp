@@ -114,8 +114,10 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 		const InferiorCells& inf = brd.GetInferiorCells();
 		consider = brd.GetPosition().GetEmpty();
 		consider-= inf.Dominated();
-		/*if(brd.GetPosition().GetEmpty().count()%2 == 0)
-			consider -=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);*/
+		//in rex symmetric boards are only first player wins for even numbers of empty cells
+		//else they are first player losses
+		if(brd.GetPosition().GetEmpty().count()%2 == 1)
+			consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
 	}
 	if (brd.GetPosition().IsSelfRotation())
 	        consider = RemoveRotations(brd.GetPosition(), consider);
@@ -270,9 +272,9 @@ bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color,
 			proof = carrier | StonesInProof(brd, color);
 			return true;
 		}
-		//if even number of cells remain and board is color symmetric we win
+		/*//if even number of cells remain and board is color symmetric we win
 		if(CheckColorSymmetry(brd.GetPosition()))
-			return true;
+			return true;*/
 
     }
     return false;
@@ -302,8 +304,8 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
 			proof = carrier | StonesInProof(brd, color);
 			return true;
 		}
-		if(CheckColorSymmetry(brd.GetPosition()))
-			return true;
+		/*if(CheckColorSymmetry(brd.GetPosition()))
+			return true;*/
     }
     return false;
 }
