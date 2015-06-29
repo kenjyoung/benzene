@@ -101,6 +101,7 @@ void InferiorCells::AddCaptured(HexColor color, const bitset_t& captured)
     RemoveVulnerable(captured);
     RemoveReversible(captured);
     RemoveDominated(captured);
+    RemoveDead(captured);
 
     AssertPairwiseDisjoint();
 }
@@ -381,6 +382,11 @@ void InferiorCells::ClearDominated()
 }
 
 //----------------------------------------------------------------------------
+
+void InferiorCells::RemoveDead(const bitset_t& dead)
+{
+	m_dead -= dead;
+}
 
 void InferiorCells::RemoveDominated(const bitset_t& dominated)
 {

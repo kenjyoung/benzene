@@ -542,17 +542,23 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
            	/**@todo This can be optimized quite a bit.*/
             bitset_t dead = FindDead(pastate, brd.GetEmpty());
             int deadcount = dead.count();
-            //can safely fillin only only an even number of deadcells in rex
-            if(deadcount%2 == 1){
-            	deadcount-=1;
-            	dead.reset(dead._Find_first());
-            }
-            if (dead.none()) 
+            if (dead.none())
                 break;
             count += deadcount;
-            //inf.AddDead(dead);
-            brd.AddColor(DEAD_COLOR, dead);
-            pastate.Update(dead);
+            inf.AddDead(dead);
+            if(deadcount%2 == 0){
+            	brd.AddColor(DEAD_COLOR, dead);
+            	pastate.Update(dead);
+            }
+            else if(deadcount != 1){
+            	bitset_t changed = bitset_t(dead).reset(dead._Find_first());
+            	count -= 1;
+            	brd.AddColor(DEAD_COLOR, changed);
+            	pastate.Update(changed);
+            }
+            else
+            	count -= 1;
+            	break;
         }
 
         // search for black captured cells; if some are found,
