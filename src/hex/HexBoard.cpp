@@ -24,7 +24,7 @@ HexBoard::HexBoard(int width, int height, const ICEngine& ice,
       m_patterns(m_brd),
       m_use_vcs(true),
       m_use_ice(true),
-      m_use_decompositions(false),
+      m_use_decompositions(true),
       m_backup_ice_info(true),
       m_builder_param(param)
 {
