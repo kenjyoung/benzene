@@ -109,16 +109,13 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 		consider.set(dead._Find_first());
 		return consider;
 	}
-	//otherwise consider every move (for now)
-	//else{
-		const InferiorCells& inf = brd.GetInferiorCells();
-		consider = brd.GetPosition().GetEmpty();
-		consider-= inf.Dominated();
-		//in rex symmetric boards are only first player wins for even numbers of empty cells
-		//else they are first player losses
-		if(brd.GetPosition().GetEmpty().count()%2 == 1)
-			consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
-	//}
+	const InferiorCells& inf = brd.GetInferiorCells();
+	consider = brd.GetPosition().GetEmpty();
+	consider-= inf.Dominated();
+	//in rex symmetric boards are only first player wins for even numbers of empty cells
+	//else they are first player losses
+	if(brd.GetPosition().GetEmpty().count()%2 == 1)
+		consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
 	if (brd.GetPosition().IsSelfRotation())
 	        consider = RemoveRotations(brd.GetPosition(), consider);
     return consider;

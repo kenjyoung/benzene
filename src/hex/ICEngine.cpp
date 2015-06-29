@@ -540,10 +540,11 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
         while (true)
         {
            	/**@todo This can be optimized quite a bit.*/
-            bitset_t dead = FindDead(pastate, brd.GetEmpty());
+            bitset_t dead = FindDead(pastate, brd.GetEmpty()) - inf.Dead();
             int deadcount = dead.count();
             if (dead.none())
                 break;
+            dead |= inf.Dead();
             count += deadcount;
             inf.AddDead(dead);
             if(deadcount%2 == 0){
@@ -699,17 +700,32 @@ std::size_t ICEngine::FillInVulnerable(HexColor color, Groups& groups,
 std::size_t ICEngine::CliqueCutsetDead(Groups& groups, PatternState& pastate,
                                        InferiorCells& out) const
 {
-    bitset_t notReachable = ComputeDeadRegions(groups);
+    bitset_t notReachable = ComputeDeadRegions(groups) -out.Dead();
+    int deadcount;
     if (m_find_three_sided_dead_regions)
         notReachable |= FindThreeSetCliques(groups);
     if (notReachable.any()) 
     {
+    	notReachable |= out.Dead();
+    	deadcount = notReachable.count();
         out.AddDead(notReachable);
-        groups.Board().AddColor(DEAD_COLOR, notReachable);
-        pastate.Update(notReachable);
+        if(deadcount%2 == 0){
+			groups.Board().AddColor(DEAD_COLOR, notReachable);
+			pastate.Update(notReachable);
+        }
+        else if(deadcount != 1){
+        	bitset_t changed = bitset_t(notReachable).reset(notReachable._Find_first());
+        	groups.Board().AddColor(DEAD_COLOR, changed);
+        	pastate.Update(changed);
+        	//deadcount -= 1;
+        }
+        else{
+        	//deadcount -= 1;
+        }
+
         GroupBuilder::Build(groups.Board(), groups);
     }
-    return notReachable.count();
+    return deadcount;
 }
 
 void ICEngine::ComputeFillin(HexColor color, Groups& groups, 
@@ -718,8 +734,8 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
 {
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
-    ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
-    /*bool considerCliqueCutset = true;
+    //ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
+    bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -729,7 +745,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             count = 0;
             count += ComputeDeadCaptured(groups, pastate, out,
                                          colors_to_capture);
-            count += FillinPermanentlyInferior(groups, pastate, color, out,
+            /*count += FillinPermanentlyInferior(groups, pastate, color, out,
                                                colors_to_capture);
             count += FillinPermanentlyInferior(groups, pastate, !color, out, 
                                                colors_to_capture);
@@ -740,7 +756,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             count += FillInVulnerable(!color, groups, pastate, out, 
                                       colors_to_capture);
             count += FillInVulnerable(color, groups, pastate, out, 
-                                      colors_to_capture);
+                                      colors_to_capture);*/
             if (0 == count)
                 break;
             considerCliqueCutset = true;
@@ -752,7 +768,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
         considerCliqueCutset = false;
     }
     if (!m_iterative_dead_regions)
-        CliqueCutsetDead(groups, pastate, out);*/
+        CliqueCutsetDead(groups, pastate, out);
 }
 
 void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
