@@ -13,7 +13,7 @@ _BEGIN_BENZENE_NAMESPACE_
 
 class CarrierList;
 
-std::vector<bitset_t> VC2Or(CarrierList semis);
+std::vector<bitset_t> VC2Or(CarrierList semis, bitset_t capturedSet);
 
 std::vector<bitset_t> VCOr(const CarrierList& semis, const CarrierList& fulls,
                            bitset_t xCapturedSet, bitset_t yCapturedSet);

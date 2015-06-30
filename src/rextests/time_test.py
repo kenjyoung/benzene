@@ -30,10 +30,9 @@ start = time.time()
 result, false_losses, false_wins = testwins(mohex, 5, ["a1"], ["b1","c1","d1","e1","a2","b2","c2","e2","a3","b3","d3","e3","a4","c4","d4","e4","a5","b5","c5","d5","e5"], ["d2","c3","b4"])
 elapsed = time.time() - start
 if result:
-		print(PASSCOLOR + name + " test passed! :)" + ENDCOLOR)
-		print("Runtime: "+str(elapsed))
+	print(PASSCOLOR + name + " test passed! :)" + ENDCOLOR)
+	print("Runtime: "+str(elapsed))
 else:
-	fail_count+=1
 	print(FAILCOLOR + name + " test failed... :(" + ENDCOLOR)
 	print("Misclassified as loss: "+str(false_losses))
 	print("Misclassified as win: "+str(false_wins)+'\n')
