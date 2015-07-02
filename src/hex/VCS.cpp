@@ -1171,11 +1171,12 @@ vector<bitset_t> benzene::VC2Or(CarrierList semis)
 	for (CarrierList::Iterator i(semis); i; ++i){
 		CarrierList::Iterator j(i);
 		for (++j; j; ++j){
-			if(!j.Old())
+			if(!j.Old()){
 				if(!(i.Carrier()&j.Carrier()).any()){
 					bitset_t new_con = i.Carrier()|j.Carrier();
 					res.push_back(new_con);
 				}
+			}
 		}
 	}
 	return res;
