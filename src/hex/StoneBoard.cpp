@@ -148,6 +148,8 @@ void StoneBoard::PlayMove(HexColor color, HexPoint cell)
 {
     BenzeneAssert(HexColorUtil::isBlackWhite(color));
     BenzeneAssert(Const().IsValid(cell));
+    BenzeneAssert(GetColor(cell)==EMPTY);
+
 
     m_played.set(cell);
     if (Const().IsLocation(cell))

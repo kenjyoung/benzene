@@ -784,8 +784,11 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
     //compute fillin already finds dead
     //FindDead(pastate, groups.Board().GetEmpty());
     ComputeFillin(color, groups, pastate, out);
-    bitset_t consider = groups.Board().GetEmpty();
-    FindDominated(pastate, color, consider, out);
+    //if any empty deadcells short circuit since we will just play that cell
+    if((out.Dead() & groups.Board().GetEmpty()).none()){
+    	bitset_t consider = groups.Board().GetEmpty();
+    	FindDominated(pastate, color, consider, out);
+    }
 
 
 

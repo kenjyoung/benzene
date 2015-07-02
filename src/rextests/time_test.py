@@ -27,7 +27,7 @@ mohex.sendCommand("param_dfpn threads 4")
 
 name = "5x5 a1"
 start = time.time()
-result, false_losses, false_wins = testwins(mohex, 5, ["a1"], ["b1","c1","d1","e1","a2","b2","c2","e2","a3","b3","d3","e3","a4","c4","d4","e4","a5","b5","c5","d5","e5"], ["d2","c3","b4"])
+result, false_losses, false_wins = testwins(mohex, 5, ["a1"], ["b1","c1","d1","e1","a2","b2","c2","e2","a3","b3","d3","e3","a4","c4","e4","a5","b5","c5","d5","e5"], ["d2","c3","b4","d4"])
 elapsed = time.time() - start
 if result:
 	print(PASSCOLOR + name + " test passed! :)" + ENDCOLOR)

@@ -102,7 +102,7 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
                         - inf.Reversible()
                         - inf.Dominated()
           - ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);*/
-	bitset_t dead = brd.GetDead();
+	bitset_t dead = brd.GetDead() & brd.GetPosition().GetEmpty();
 	//if there are any dead cells they are provably equivalent and superior moves so just return one to play
 	if(dead.any()){
 		consider = bitset_t();
