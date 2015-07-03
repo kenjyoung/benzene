@@ -18,7 +18,7 @@ def testallwins(program, size, opening, expected_wins):
 		return (True, [], [])
 	else:
 		false_losses = [x for x in expected_wins if x not in wins]
-		false_wins = [x for x in wins if x in expected_wins]
+		false_wins = [x for x in wins if x not in expected_wins]
 		return(False, false_losses, false_wins)
 
 mohex = Program("../mohex/./mohex 2>/dev/null", True)

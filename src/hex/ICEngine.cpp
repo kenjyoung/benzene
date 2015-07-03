@@ -535,31 +535,35 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
     std::size_t count = 0;
     while (true) 
     {
-        // search for dead; if some are found, fill them in
+        // search for dead; if more than one are found, fill in an even number in
         // and iterate again.
         while (true)
         {
-           	/**@todo This can be optimized quite a bit.*/
-            bitset_t dead = FindDead(pastate, brd.GetEmpty()) - inf.Dead();
+           	//@todo This can be optimized quite a bit.
+        	bitset_t empty = brd.GetEmpty();
+            bitset_t dead = FindDead(pastate, empty) | (inf.Dead() & empty);
             int deadcount = dead.count();
             if (dead.none())
                 break;
-            dead |= inf.Dead();
             count += deadcount;
             inf.AddDead(dead);
             if(deadcount%2 == 0){
             	brd.AddColor(DEAD_COLOR, dead);
             	pastate.Update(dead);
+            	continue;
             }
             else if(deadcount != 1){
             	bitset_t changed = bitset_t(dead).reset(dead._Find_first());
             	count -= 1;
             	brd.AddColor(DEAD_COLOR, changed);
             	pastate.Update(changed);
+            	continue;
             }
-            else
+            else{
             	count -= 1;
             	break;
+            }
+
         }
 
         // search for black captured cells; if some are found,
@@ -700,13 +704,13 @@ std::size_t ICEngine::FillInVulnerable(HexColor color, Groups& groups,
 std::size_t ICEngine::CliqueCutsetDead(Groups& groups, PatternState& pastate,
                                        InferiorCells& out) const
 {
-    bitset_t notReachable = ComputeDeadRegions(groups) -out.Dead();
+    bitset_t notReachable = ComputeDeadRegions(groups);
     int deadcount;
     if (m_find_three_sided_dead_regions)
         notReachable |= FindThreeSetCliques(groups);
     if (notReachable.any()) 
     {
-    	notReachable |= out.Dead();
+    	notReachable |= (groups.Board().GetEmpty() &out.Dead());
     	deadcount = notReachable.count();
         out.AddDead(notReachable);
         if(deadcount%2 == 0){
@@ -717,10 +721,10 @@ std::size_t ICEngine::CliqueCutsetDead(Groups& groups, PatternState& pastate,
         	bitset_t changed = bitset_t(notReachable).reset(notReachable._Find_first());
         	groups.Board().AddColor(DEAD_COLOR, changed);
         	pastate.Update(changed);
-        	//deadcount -= 1;
+        	deadcount -= 1;
         }
         else{
-        	//deadcount -= 1;
+        	deadcount -= 1;
         }
 
         GroupBuilder::Build(groups.Board(), groups);
@@ -735,7 +739,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
     //ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
-    bool considerCliqueCutset = true;
+    //bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -759,16 +763,16 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                                       colors_to_capture);*/
             if (0 == count)
                 break;
-            considerCliqueCutset = true;
+            //considerCliqueCutset = true;
         }
-        if (m_iterative_dead_regions && considerCliqueCutset)
-            count = CliqueCutsetDead(groups, pastate, out);
+        /*f (m_iterative_dead_regions && considerCliqueCutset)
+            count = CliqueCutsetDead(groups, pastate, out);*/
         if (0 == count)
             break;
-        considerCliqueCutset = false;
+        //considerCliqueCutset = false;
     }
-    if (!m_iterative_dead_regions)
-        CliqueCutsetDead(groups, pastate, out);
+    /*if (!m_iterative_dead_regions)
+        CliqueCutsetDead(groups, pastate, out);*/
 }
 
 void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
