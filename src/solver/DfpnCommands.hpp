@@ -48,6 +48,7 @@ private:
     void CmdParam(HtpCommand& cmd);
     void CmdParamSolverDB(HtpCommand& cmd);
     void CmdSolveState(HtpCommand& cmd);
+    void CmdFindPuzzles(HtpCommand& cmd);
     void CmdFindWinning(HtpCommand& cmd);
     void CmdClearTT(HtpCommand& cmd);
     void CmdGetState(HtpCommand& cmd);

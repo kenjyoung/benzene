@@ -45,6 +45,7 @@ void DfpnCommands::Register(GtpEngine& e)
     Register(e, "dfpn-restore-tt", &DfpnCommands::CmdRestoreTT);
     Register(e, "dfpn-db-stat", &DfpnCommands::CmdDBStat);
     Register(e, "dfpn-evaluation-info", &DfpnCommands::CmdEvaluationInfo);
+    Register(e, "dfpn-find-puzzles", &DfpnCommands::CmdFindPuzzles);
 }
 
 void DfpnCommands::Register(GtpEngine& engine, const std::string& command,
@@ -67,6 +68,7 @@ void DfpnCommands::AddAnalyzeCommands(HtpCommand& cmd)
         "var/DFPN Get PV/dfpn-get-pv %m\n"
         "string/DFPN Solve State/dfpn-solve-state %m\n"
         "plist/DFPN Find Winning/dfpn-solver-find-winning %m\n"
+    	"none/DFPN Find Puzzles/dfpn-find-puzzles"
         "none/DFPN Open DB/dfpn-open-db %r\n"
         "none/DFPN Close DB/dfpn-close-db\n"
         "none/DFPN Merge DB/dfpn-merge-db %r\n"
@@ -232,6 +234,36 @@ void DfpnCommands::CmdSolveState(HtpCommand& cmd)
                                m_positions, pv, maxBounds);
     cmd << winner;
     LogInfo() << "Total Elapsed Time: " << timer.GetTime() << '\n';
+}
+
+/** Look for continuations of the current position which are
+ 	difficult to solve and have a low fraction of winning moves.*/
+void DfpnCommands::CmdFindPuzzles(HtpCommand& cmd)
+{
+    cmd.CheckNuArg(1);
+    HexColor colorToMove = HtpUtil::ColorArg(cmd, 0);
+    HexBoard& brd = m_env.SyncBoard(m_game.Board());
+    //brd.ComputeAll(colorToMove);
+    bitset_t consider = brd.GetPosition().GetEmpty();
+
+    bitset_t winning;
+    SgTimer timer;
+
+    HexState state(m_game.Board(), colorToMove);
+    for (BitsetIterator p(consider); p; ++p)
+    {
+        state.PlayMove(*p);
+        HexBoard& brd = m_env.SyncBoard(state.Position());
+        LogInfo() << "****** Trying " << *p << " ******\n" << brd << '\n';
+        PointSequence pv;
+        HexColor winner = m_solver.StartSearch(state, brd, m_positions, pv);
+        if (winner == colorToMove)
+            winning.set(*p);
+        LogInfo() << "****** " << winner << " wins ******\n";
+        state.UndoMove(*p);
+    }
+    LogInfo() << "Total Elapsed Time: " << timer.GetTime() << '\n';
+    cmd << HexPointUtil::ToString(winning);
 }
 
 /** Finds all winning moves in the current state with dfpn,
