@@ -572,6 +572,9 @@ HexColor DfpnSolver::StartSearch(const HexState& state, HexBoard& board,
     	HexColor w = rotdata.m_bounds.IsWinning()
     	   ? rotstate.ToPlay() : !rotstate.ToPlay();
     	SolverDBUtil::GetVariation(rotstate, *m_positions, pv);
+    	for(vector<HexPoint>::iterator it = pv.begin(); it!=pv.end(); it++){
+    		*it = BoardUtil::Rotate(rotbrd.Const(), *it);
+    	}
     	LogInfo() << w << " wins!\n";
     	LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
     	return w;

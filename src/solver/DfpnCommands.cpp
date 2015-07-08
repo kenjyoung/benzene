@@ -5,6 +5,8 @@
 #include "BitsetIterator.hpp"
 #include "EndgameUtil.hpp"
 #include "DfpnCommands.hpp"
+#include "BoardUtil.hpp"
+#include <queue>
 
 using namespace benzene;
 using namespace boost::posix_time;
@@ -236,34 +238,98 @@ void DfpnCommands::CmdSolveState(HtpCommand& cmd)
     LogInfo() << "Total Elapsed Time: " << timer.GetTime() << '\n';
 }
 
+typedef struct puzzle_info
+{
+	HexState state;
+	PointSequence pv;
+	double time;
+	bool operator<(const puzzle_info& rhs) const
+	{
+		return this->time <rhs.time;
+	}
+
+} puzzle_info;
+
+bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
+{
+    bitset_t ret;
+    for (BitsetIterator it(consider); it; ++it)
+    {
+        HexPoint rotated = BoardUtil::Rotate(brd.Const(), *it);
+        if (!ret.test(rotated))
+            ret.set(*it);
+    }
+    return ret;
+}
+
+int GetPuzzleInfo(HexState& state, HexEnvironment& env, DfpnSolver& solver, DfpnStates& positions, std::priority_queue<puzzle_info>& puzzle_queue){
+	    bitset_t consider = state.Position().GetEmpty();
+	    if (state.Position().IsSelfRotation())
+	    	        consider = RemoveRotations(state.Position(), consider);
+	    HexColor colorToMove = state.ToPlay();
+	    int win_count = 0;
+	    for (BitsetIterator p(consider); p; ++p)
+	    {
+	        state.PlayMove(*p);
+	        HexBoard& brd = env.SyncBoard(state.Position());
+	        LogInfo() << "****** Trying " << *p << " ******\n" << brd << '\n';
+	        PointSequence pv;
+	        SgTimer timer;
+	        HexColor winner = solver.StartSearch(state, brd, positions, pv);
+	        puzzle_info info = {HexState(state), pv, timer.GetTime()};
+	        puzzle_queue.push(info);
+	        if (winner == colorToMove)
+	        	win_count++;
+	        LogInfo() << "****** " << winner << " wins ******\n";
+	        state.UndoMove(*p);
+	    }
+	    return win_count;
+}
+
 /** Look for continuations of the current position which are
- 	difficult to solve and have a low fraction of winning moves.*/
+ 	difficult to solve and have a low fraction of winning moves.
+ 	arg0 = color to move in current state
+ 	arg1 = keep this many of the hardest moves to solve at each point
+ 	arg2 = if the fraction of wins is less than this but more than zero we call it a puzzle*/
 void DfpnCommands::CmdFindPuzzles(HtpCommand& cmd)
 {
-    cmd.CheckNuArg(1);
+	std::queue<HexState> states;
+	vector<HexState> puzzles;
+	std::priority_queue<puzzle_info> puzzle_queue;
+	HexState cur;
+    cmd.CheckNuArg(3);
     HexColor colorToMove = HtpUtil::ColorArg(cmd, 0);
-    HexBoard& brd = m_env.SyncBoard(m_game.Board());
-    //brd.ComputeAll(colorToMove);
-    bitset_t consider = brd.GetPosition().GetEmpty();
+    int states_to_keep = cmd.IntArg(1);
+    double winning_fraction = cmd.FloatArg(2);
+    
+    states.push(HexState(m_game.Board(), colorToMove));
+    while(!states.empty()){
+    	cur =states.front();
+    	states.pop();
+    	int move_count = cur.Position().GetEmpty().count();
+    	int wins = GetPuzzleInfo(cur, m_env, m_solver, m_positions, puzzle_queue);
+    	if(wins>0 && (float) wins/ (float) move_count < winning_fraction){
+    		LogInfo()<<"Puzzle found:\n"<<cur.Position()<<"\n";
+    		puzzles.push_back(cur);
+    	}
 
-    bitset_t winning;
-    SgTimer timer;
-
-    HexState state(m_game.Board(), colorToMove);
-    for (BitsetIterator p(consider); p; ++p)
-    {
-        state.PlayMove(*p);
-        HexBoard& brd = m_env.SyncBoard(state.Position());
-        LogInfo() << "****** Trying " << *p << " ******\n" << brd << '\n';
-        PointSequence pv;
-        HexColor winner = m_solver.StartSearch(state, brd, m_positions, pv);
-        if (winner == colorToMove)
-            winning.set(*p);
-        LogInfo() << "****** " << winner << " wins ******\n";
-        state.UndoMove(*p);
+    	int i = 0;
+    	while(i<states_to_keep && !puzzle_queue.empty()){
+    		puzzle_info info = puzzle_queue.top();
+    		puzzle_queue.pop();
+    		PointSequence pv = info.pv;
+    		HexState state = HexState(info.state);
+    		for(vector<HexPoint>::iterator p = pv.begin(); p<pv.end(); p++){
+    			state.PlayMove(*p);
+    			states.push(HexState(state));
+    		}
+    	}
     }
-    LogInfo() << "Total Elapsed Time: " << timer.GetTime() << '\n';
-    cmd << HexPointUtil::ToString(winning);
+    std::vector<HexState>::iterator it;
+    LogInfo()<<"Puzzles:\n";
+    for(it = puzzles.begin(); it< puzzles.end(); it++){
+    	LogInfo()<<(*it).Position()<<"\n";
+    }
 }
 
 /** Finds all winning moves in the current state with dfpn,
