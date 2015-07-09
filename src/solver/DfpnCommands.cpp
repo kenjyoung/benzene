@@ -242,10 +242,10 @@ typedef struct puzzle_info
 {
 	HexState state;
 	PointSequence pv;
-	double time;
+	double work;
 	bool operator<(const puzzle_info& rhs) const
 	{
-		return this->time <rhs.time;
+		return this->work <rhs.work;
 	}
 
 } puzzle_info;
@@ -276,7 +276,9 @@ int GetPuzzleInfo(HexState& state, HexEnvironment& env, DfpnSolver& solver, Dfpn
 	        PointSequence pv;
 	        SgTimer timer;
 	        HexColor winner = solver.StartSearch(state, brd, positions, pv);
-	        puzzle_info info = {HexState(state), pv, timer.GetTime()};
+	        DfpnData data;
+	        solver.DBRead(state,data);
+	        puzzle_info info = {HexState(state), pv, data.m_work};
 	        puzzle_queue.push(info);
 	        if (winner == colorToMove)
 	        	win_count++;
@@ -320,6 +322,8 @@ void DfpnCommands::CmdFindPuzzles(HtpCommand& cmd)
     		PointSequence pv = info.pv;
     		HexState state = HexState(info.state);
     		for(vector<HexPoint>::iterator p = pv.begin(); p<pv.end(); p++){
+    			if((state.Position().GetEmpty().count()-1)*winning_fraction<1)
+    				break;
     			state.PlayMove(*p);
     			states.push(HexState(state));
     		}

@@ -747,6 +747,7 @@ private:
 public:
     void RunThread(int id, const DfpnBounds& maxBounds,
                    const HexState& state, HexBoard& board);
+    bool DBRead(const HexState& state, DfpnData& data);
 
 private:
     struct TopMidData
@@ -827,8 +828,6 @@ private:
     bool TTRead(const HexState& state, DfpnData& data);
 
     void DBWrite(const HexState& state, DfpnData& data);
-
-    bool DBRead(const HexState& state, DfpnData& data);
 
     void TryDoBackups(bool adjust_start = false);
 
