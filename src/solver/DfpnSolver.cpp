@@ -555,12 +555,12 @@ HexColor DfpnSolver::StartSearch(const HexState& state, HexBoard& board,
     DfpnData data;
     if (DBRead(state, data) && data.m_bounds.IsSolved())
     {
-        LogInfo() << "Already solved!\n";
+        //LogInfo() << "Already solved!\n";
         HexColor w = data.m_bounds.IsWinning()
             ? state.ToPlay() : !state.ToPlay();
         SolverDBUtil::GetVariation(state, *m_positions, pv);
-        LogInfo() << w << " wins!\n";
-        LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
+        //LogInfo() << w << " wins!\n";
+        //LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
         return w;
     }
     DfpnData rotdata;
@@ -568,15 +568,15 @@ HexColor DfpnSolver::StartSearch(const HexState& state, HexBoard& board,
     rotbrd.RotateBoard();
     HexState rotstate(rotbrd, state.ToPlay());
     if (DBRead(rotstate, rotdata) && rotdata.m_bounds.IsSolved()){
-    	LogInfo() << "Rotation already solved!\n";
+    	//LogInfo() << "Rotation already solved!\n";
     	HexColor w = rotdata.m_bounds.IsWinning()
     	   ? rotstate.ToPlay() : !rotstate.ToPlay();
     	SolverDBUtil::GetVariation(rotstate, *m_positions, pv);
     	for(vector<HexPoint>::iterator it = pv.begin(); it!=pv.end(); it++){
     		*it = BoardUtil::Rotate(rotbrd.Const(), *it);
     	}
-    	LogInfo() << w << " wins!\n";
-    	LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
+    	//LogInfo() << w << " wins!\n";
+    	//LogInfo() << "PV: " << HexPointUtil::ToString(pv) << '\n';
     	return w;
     }
 
@@ -608,7 +608,7 @@ HexColor DfpnSolver::StartSearch(const HexState& state, HexBoard& board,
     if (DBRead(state, data) && data.m_bounds.IsSolved())
         winner = data.m_bounds.IsWinning()
             ? state.ToPlay() : !state.ToPlay();
-    PrintStatistics(winner, pv);
+    //PrintStatistics(winner, pv);
 
     if (m_aborted)
         LogInfo() << "Search aborted.\n";

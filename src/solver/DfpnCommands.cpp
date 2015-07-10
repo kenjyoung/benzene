@@ -264,15 +264,15 @@ bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
 
 int GetPuzzleInfo(HexState& state, HexEnvironment& env, DfpnSolver& solver, DfpnStates& positions, std::priority_queue<puzzle_info>& puzzle_queue){
 	    bitset_t consider = state.Position().GetEmpty();
-	    if (state.Position().IsSelfRotation())
-	    	        consider = RemoveRotations(state.Position(), consider);
+	    /*if (state.Position().IsSelfRotation())
+	    	        consider = RemoveRotations(state.Position(), consider);*/
 	    HexColor colorToMove = state.ToPlay();
 	    int win_count = 0;
 	    for (BitsetIterator p(consider); p; ++p)
 	    {
 	        state.PlayMove(*p);
 	        HexBoard& brd = env.SyncBoard(state.Position());
-	        LogInfo() << "****** Trying " << *p << " ******\n" << brd << '\n';
+	        //LogInfo() << "****** Trying " << *p << " ******\n" << brd << '\n';
 	        PointSequence pv;
 	        SgTimer timer;
 	        HexColor winner = solver.StartSearch(state, brd, positions, pv);
@@ -282,7 +282,7 @@ int GetPuzzleInfo(HexState& state, HexEnvironment& env, DfpnSolver& solver, Dfpn
 	        puzzle_queue.push(info);
 	        if (winner == colorToMove)
 	        	win_count++;
-	        LogInfo() << "****** " << winner << " wins ******\n";
+	        //LogInfo() << "****** " << winner << " wins ******\n";
 	        state.UndoMove(*p);
 	    }
 	    return win_count;
