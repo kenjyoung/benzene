@@ -262,10 +262,7 @@ bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
     return ret;
 }
 
-int GetPuzzleInfo(HexState& state, HexEnvironment& env, DfpnSolver& solver, DfpnStates& positions, std::priority_queue<puzzle_info>& puzzle_queue){
-	    bitset_t consider = state.Position().GetEmpty();
-	    /*if (state.Position().IsSelfRotation())
-	    	        consider = RemoveRotations(state.Position(), consider);*/
+int GetPuzzleInfo(HexState& state, const bitset_t& consider, HexEnvironment& env, DfpnSolver& solver, DfpnStates& positions, std::priority_queue<puzzle_info>& puzzle_queue){
 	    HexColor colorToMove = state.ToPlay();
 	    int win_count = 0;
 	    for (BitsetIterator p(consider); p; ++p)
@@ -308,8 +305,11 @@ void DfpnCommands::CmdFindPuzzles(HtpCommand& cmd)
     while(!states.empty()){
     	cur =states.front();
     	states.pop();
-    	int move_count = cur.Position().GetEmpty().count();
-    	int wins = GetPuzzleInfo(cur, m_env, m_solver, m_positions, puzzle_queue);
+    	bitset_t consider = cur.Position().GetEmpty();
+	    if (cur.Position().IsSelfRotation())
+	    	        consider = RemoveRotations(cur.Position(), consider);
+	    int move_count = consider.count();
+    	int wins = GetPuzzleInfo(cur, consider, m_env, m_solver, m_positions, puzzle_queue);
     	if(wins>0 && (float) wins/ (float) move_count < winning_fraction){
     		LogInfo()<<"Puzzle found:\n"<<cur.Position()<<"\n";
     		puzzles.push_back(cur);
