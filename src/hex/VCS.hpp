@@ -231,6 +231,8 @@ public:
         connecting edges. Returns INVALID_POINT if there is none. */
     HexPoint SmallestSemiKey() const;
 
+    std::vector<bitset_t> VC2Or(CarrierList semis, HexPoint x, HexPoint y, const bitset_t *m_capturedSet);
+
     bool FullExists() const;
 
     bool FullExists(HexPoint x, HexPoint y) const;

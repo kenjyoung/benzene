@@ -1145,7 +1145,7 @@ void VCS::OrSemis(HexPoint x, HexPoint y)
     AndList *xy_fulls = m_fulls[x][y];
     m_statistics.doOrs++;
     //modified for rex
-    std::vector<bitset_t> new_fulls = VC2Or(*xy_semis, m_capturedSet[x], m_capturedSet[y]);/*m_param->limit_or ?
+    std::vector<bitset_t> new_fulls = VC2Or(*xy_semis, x, y, m_capturedSet);/*m_param->limit_or ?
         VCOr(*xy_semis, xy_fulls ? xy_fulls->GetAllIntersection() : bitset_t().set(),
              m_capturedSet[x], m_capturedSet[y]) :
         VCOr(*xy_semis, xy_fulls ? *xy_fulls : CarrierList(),
@@ -1165,10 +1165,11 @@ void VCS::OrSemis(HexPoint x, HexPoint y)
 }
 
 //compute only 2-or connections (pairing strategies for rex)
-vector<bitset_t> benzene::VC2Or(CarrierList semis, bitset_t xCapturedSet, bitset_t yCapturedSet)
+vector<bitset_t> VCS::VC2Or(CarrierList semis, HexPoint x, HexPoint y, const bitset_t *m_capturedSet)
 {
-	/*TODO: optomize this a little better, and maybe add in key captured sets?*/
 	vector<bitset_t> res;
+	bitset_t xCapturedSet = m_capturedSet[x];
+	bitset_t yCapturedSet = m_capturedSet[y];
 	for (CarrierList::Iterator i(semis); i; ++i){
 		CarrierList::Iterator j(i);
 		for (++j; j; ++j){
@@ -1361,7 +1362,7 @@ HexPoint VCS::SemiKey(bitset_t carrier, HexPoint x, HexPoint y) const
             }
         }
     }
-    BenzeneAssert(false /* always should find a key */);
+    //BenzeneAssert(false /* always should find a key */);
     return INVALID_POINT;
 }
 
