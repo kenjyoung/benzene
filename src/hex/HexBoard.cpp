@@ -24,7 +24,7 @@ HexBoard::HexBoard(int width, int height, const ICEngine& ice,
       m_patterns(m_brd),
       m_use_vcs(true),
       m_use_ice(true),
-      m_use_decompositions(false),
+      m_use_decompositions(true),
       m_backup_ice_info(true),
       m_builder_param(param)
 {
@@ -94,8 +94,9 @@ void HexBoard::RevertVCs()
 }
 
 /** In non-terminal states, checks for combinatorial decomposition
-    with a vc using Decompositions::Find(). Plays the carrier using
-    AddStones(). Loops until no more decompositions are found. */
+    with a pairing strategy using Decompositions::Find(). Plays the carrier using
+    AddStones() only if it is even (it would always be except that we use endpoint and key captured sets in H-search.
+    Loops until no more decompositions are found. */
 void HexBoard::HandleVCDecomposition(HexColor color_to_move)
 {
     if (!m_use_decompositions) 
@@ -117,9 +118,13 @@ void HexBoard::HandleVCDecomposition(HexColor color_to_move)
             {
                 LogFine() << "Decomposition " << decompositions << ": for " 
 			  << *c << ".\n" << m_brd.Write(captured) << '\n';
-            
-                AddStones(*c, captured, color_to_move);
-                m_inf.AddCaptured(*c, captured);
+                if(captured.count()%2 == 0){
+                	AddStones(*c, captured, color_to_move);
+                	m_inf.AddCaptured(*c, captured);
+                }
+                else{
+                	break;
+                }
             
                 LogFine() << "After decomposition " << decompositions 
 			  << ": " << m_brd << '\n';
