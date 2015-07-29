@@ -24,7 +24,7 @@ HexBoard::HexBoard(int width, int height, const ICEngine& ice,
       m_patterns(m_brd),
       m_use_vcs(true),
       m_use_ice(true),
-      m_use_decompositions(true),
+      m_use_decompositions(false),
       m_backup_ice_info(true),
       m_builder_param(param)
 {
@@ -145,7 +145,7 @@ void HexBoard::ComputeAll(HexColor color_to_move)
 
     ComputeInferiorCells(color_to_move);
 
-    //if any empty deadcells short cirtuit since we will just play that cell anyway
+    //if any empty deadcells short circuit since we will just play that cell anyway
     if (m_use_vcs && (m_inf.Dead() & GetPosition().GetEmpty()).none())
     {
         BuildVCs();
