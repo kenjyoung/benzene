@@ -498,7 +498,7 @@ ICEngine::ICEngine()
       m_use_handcoded_patterns(false),
       m_backup_opponent_dead(false),
       m_find_three_sided_dead_regions(false),
-      m_iterative_dead_regions(false)
+      m_iterative_dead_regions(true)
 {
     LoadHandCodedPatterns();
     LoadPatterns();
@@ -738,8 +738,8 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
 {
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
-    //ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
-    //bool considerCliqueCutset = true;
+    ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
+    bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -763,16 +763,16 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                                       colors_to_capture);*/
             if (0 == count)
                 break;
-            //considerCliqueCutset = true;
+            considerCliqueCutset = true;
         }
-        /*f (m_iterative_dead_regions && considerCliqueCutset)
-            count = CliqueCutsetDead(groups, pastate, out);*/
+        if (m_iterative_dead_regions && considerCliqueCutset)
+            count = CliqueCutsetDead(groups, pastate, out);
         if (0 == count)
             break;
-        //considerCliqueCutset = false;
+        considerCliqueCutset = false;
     }
-    /*if (!m_iterative_dead_regions)
-        CliqueCutsetDead(groups, pastate, out);*/
+    if (!m_iterative_dead_regions)
+        CliqueCutsetDead(groups, pastate, out);
 }
 
 void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,

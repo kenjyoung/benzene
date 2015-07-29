@@ -19,7 +19,7 @@ using namespace benzene;
 VCBuilderParam::VCBuilderParam()
     : and_over_edge(false),
       use_patterns(false),
-      use_non_edge_patterns(true),
+      use_non_edge_patterns(false),
       incremental_builds(true),
       limit_fulls(true),
       limit_or(true)
@@ -1178,6 +1178,8 @@ vector<bitset_t> VCS::VC2Or(CarrierList semis, HexPoint x, HexPoint y, const bit
 				bitset_t I = i.Carrier()&j.Carrier();
 		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
 		            capturedSet |= xCapturedSet;
+		        if((xCapturedSet&yCapturedSet).any())
+		        	capturedSet.reset();
 		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
 		            capturedSet |= yCapturedSet;
 		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
