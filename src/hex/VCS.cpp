@@ -1019,7 +1019,9 @@ void VCS::AndFull(HexPoint x, HexPoint y, bitset_t carrier)
     if (!m_fulls[x][y]->TrySetProcessed(carrier))
         return;
 
-    bitset_t xyCapturedSet = m_capturedSet[x] | m_capturedSet[y];
+    bitset_t xyCapturedSet = m_capturedSet[x];
+    if(!(m_capturedSet[x]&m_capturedSet[y]).any())
+    	xyCapturedSet|=m_capturedSet[y];
     AndFull(x, y, carrier, m_brd->GetColor(y), xyCapturedSet);
     AndFull(y, x, carrier, m_brd->GetColor(x), xyCapturedSet);
 }
@@ -1044,7 +1046,9 @@ inline void VCS::AndFullEmptyFull(HexPoint x, HexPoint z, bitset_t carrier,
         BenzeneAssert(y == m_groups->CaptainOf(y));
         BenzeneAssert(x != y && z != y);
         BenzeneAssert(!carrier.test(y));
-        AndFullEmptyFull(x, z, y, carrier, xzCapturedSet | m_capturedSet[y]);
+        if(!(xzCapturedSet&m_capturedSet[y]).any())
+        	xzCapturedSet |= m_capturedSet[y];
+        AndFullEmptyFull(x, z, y, carrier, xzCapturedSet);
     }
 }
 
@@ -1095,7 +1099,9 @@ inline void VCS::AndFullStoneFull(HexPoint x, HexPoint z, bitset_t carrier,
         BenzeneAssert(y == m_groups->CaptainOf(y));
         BenzeneAssert(x != y && z != y);
         BenzeneAssert(!carrier.test(y));
-        AndFullStoneFull(x, z, y, carrier, xzCapturedSet | m_capturedSet[y]);
+        if(!(xzCapturedSet&m_capturedSet[y]).any())
+                	xzCapturedSet |= m_capturedSet[y];
+        AndFullStoneFull(x, z, y, carrier, xzCapturedSet);
     }
 }
 
