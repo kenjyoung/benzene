@@ -40,14 +40,14 @@ mohex.sendCommand("param_dfpn threads 4")
 outcome_tests = []
 outcome_tests.append(("1x1", [1, [], "black"]))
 outcome_tests.append(("3x3", [3, [], "black"]))
-# outcome_tests.append(("5x5", [5, [], "black"]))
-# outcome_tests.append(("5x5 a1 e5",[5, ["a1","e5"], "black"]))
-# outcome_tests.append(("5x5 b1 a2",[5, ["b1","a2"], "black"]))
-# outcome_tests.append(("5x5 b1 e4",[5, ["b1","e4"], "black"]))
-# outcome_tests.append(("5x5 c3 a1",[5, ["c3","a1"], "black"]))
-# outcome_tests.append(("5x5 c3 b1",[5, ["c3","b1"], "black"]))
-# outcome_tests.append(("5x5 c3 d5",[5, ["c3","d5"], "black"]))
-# outcome_tests.append(("5x5 c3 e5",[5, ["c3","e5"], "black"]))
+outcome_tests.append(("5x5", [5, [], "black"]))
+outcome_tests.append(("5x5 a1 e5",[5, ["a1","e5"], "black"]))
+outcome_tests.append(("5x5 b1 a2",[5, ["b1","a2"], "black"]))
+outcome_tests.append(("5x5 b1 e4",[5, ["b1","e4"], "black"]))
+outcome_tests.append(("5x5 c3 a1",[5, ["c3","a1"], "black"]))
+outcome_tests.append(("5x5 c3 b1",[5, ["c3","b1"], "black"]))
+outcome_tests.append(("5x5 c3 d5",[5, ["c3","d5"], "black"]))
+outcome_tests.append(("5x5 c3 e5",[5, ["c3","e5"], "black"]))
 
 
 #wins test format: (<name>, [<boardsize>, <opening moves>, <expected winning moves>, <expected losing moves>])
@@ -59,6 +59,7 @@ wins_tests.append(("3x3 b1", [3, ["b1"], ["a1","a2","a3","b2","b3","c1","c2","c3
 wins_tests.append(("3x3 c1", [3, ["c1"], ["a1","a2","a3","b1","b2","b3","c2","c3"], []]))
 wins_tests.append(("3x3 a2", [3, ["a2"], ["a1","a3","b1","b3","c1","c2","c3"], ["b2"]]))
 wins_tests.append(("3x3 b2", [3, ["b2"], ["a1","a2","a3","b1","b3","c1","c2","c3"], []]))
+#wins_tests.append(("5x5 a1", [5, ["a1"], ["b1","c1","d1","e1","a2","b2","c2","e2","a3","b3","d3","e3","a4","c4","d4","e4","a5","b5","c5","d5","e5"], ["d2","c3","b4"]]))
 
 fail_count = 0
 for name, test in outcome_tests:
@@ -67,7 +68,7 @@ for name, test in outcome_tests:
 	else:
 		fail_count+=1
 		print(FAILCOLOR + name + " test failed... :(" + ENDCOLOR)
-		print("Expected winner "+test[2]+" did not match computed.\n")
+		print("Expected winner ("+test[2]+") did not match computed.\n")
 
 for name, test in wins_tests:
 	result, false_losses, false_wins = testwins(mohex, test[0], test[1], test[2], test[3])
@@ -78,7 +79,7 @@ for name, test in wins_tests:
 		print(FAILCOLOR + name + " test failed... :(" + ENDCOLOR)
 		print("Misclassified as loss: "+str(false_losses))
 		print("Misclassified as win: "+str(false_wins)+'\n')
-
+		
 if fail_count == 0:
 	print(PASSCOLOR+"All tests passed! :)"+ENDCOLOR)
 else:
