@@ -221,6 +221,8 @@ private:
 
     void RevertVCs();
 
+    void ResetVCs();
+
     void HandleVCDecomposition(HexColor color_to_move);
 
     void AddStones(HexColor color, const bitset_t& played,

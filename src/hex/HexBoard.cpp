@@ -87,6 +87,12 @@ void HexBoard::BuildVCs(const Groups& oldGroups,
                         added, use_changelog);
 }
 
+void HexBoard::ResetVCs()
+{
+    for (BWIterator c; c; ++c)
+        m_cons[*c]->Reset();
+}
+
 void HexBoard::RevertVCs()
 {
     for (BWIterator c; c; ++c)
@@ -155,6 +161,9 @@ void HexBoard::ComputeAll(HexColor color_to_move)
     {
         BuildVCs();
         HandleVCDecomposition(color_to_move);
+    }
+    else{
+    	ResetVCs();
     }
     LogFine() << timer.GetTime() << "s to compute all.\n";
 }

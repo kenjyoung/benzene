@@ -199,6 +199,9 @@ public:
     /** Reverts last incremental build. */
     void Revert();
 
+    /** Clears connections and statistics for the from scratch build. */
+    void Reset();
+
     // @}
 
     /** Calls used by solver/players staff */
@@ -435,9 +438,6 @@ private:
     void ComputeCapturedSets(const PatternState& patterns);
     void AddBaseVCs();
     void AddPatternVCs();
-
-    /** Clears connections and statistics for the from scratch build. */
-    void Reset();
 
     void TestQueuesEmpty();
 
