@@ -537,7 +537,7 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
     {
         // search for dead; if more than one are found, fill in an even number in
         // and iterate again.
-        while (true)
+        /*while (true)
         {
            	//@todo This can be optimized quite a bit.
         	bitset_t empty = brd.GetEmpty();
@@ -564,7 +564,7 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
             	break;
             }
 
-        }
+        }*/
 
         // search for black captured cells; if some are found,
         // fill them in and go back to look for more dead. 
@@ -739,7 +739,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
     ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
-    bool considerCliqueCutset = true;
+    //bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -763,16 +763,16 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                                       colors_to_capture);*/
             if (0 == count)
                 break;
-            considerCliqueCutset = true;
+            //considerCliqueCutset = true;
         }
-        if (m_iterative_dead_regions && considerCliqueCutset)
-            count = CliqueCutsetDead(groups, pastate, out);
+        /*if (m_iterative_dead_regions && considerCliqueCutset)
+            count = CliqueCutsetDead(groups, pastate, out);*/
         if (0 == count)
             break;
-        considerCliqueCutset = false;
+        //considerCliqueCutset = false;
     }
-    if (!m_iterative_dead_regions)
-        CliqueCutsetDead(groups, pastate, out);
+    /*if (!m_iterative_dead_regions)
+        CliqueCutsetDead(groups, pastate, out);*/
 }
 
 void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
