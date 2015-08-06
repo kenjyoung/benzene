@@ -157,14 +157,14 @@ void HexBoard::ComputeAll(HexColor color_to_move)
     ComputeInferiorCells(color_to_move);
 
     //if any empty deadcells short circuit since we will just play that cell anyway
-    if (m_use_vcs && (m_inf.Dead() & GetPosition().GetEmpty()).none())
+    /*if (m_use_vcs && (m_inf.Dead() & GetPosition().GetEmpty()).none())
     {
         BuildVCs();
         HandleVCDecomposition(color_to_move);
     }
     else{
     	ResetVCs();
-    }
+    }*/
     LogFine() << timer.GetTime() << "s to compute all.\n";
 }
 
