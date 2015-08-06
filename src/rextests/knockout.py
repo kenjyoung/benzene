@@ -24,7 +24,7 @@ def testallwins(program, size, opening, expected_wins):
 trials = 5
 total_time = 0
 for x in range(trials):
-	mohex = Program("../mohex/./mohex 2>/dev/null", True)
+	mohex = Program("../mohex/./mohex 2>/dev/null", False)
 	mohex.sendCommand("param_dfpn threads 4")
 	with open("rex5x5opening.dat") as f:
 		lines = f.readlines()
