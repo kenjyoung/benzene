@@ -160,7 +160,7 @@ void HexBoard::ComputeAll(HexColor color_to_move)
     if (m_use_vcs && (m_inf.Dead() & GetPosition().GetEmpty()).none())
     {
         BuildVCs();
-        HandleVCDecomposition(color_to_move);
+        //HandleVCDecomposition(color_to_move);
     }
     else{
     	ResetVCs();
