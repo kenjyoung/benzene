@@ -885,16 +885,18 @@ size_t DfpnSolver::CreateData(DfpnData& data)
     data.m_evaluationScore = (colorToMove == BLACK)
         ? resist.Score() : -resist.Score();
     m_allEvaluation.Add(data.m_evaluationScore);
-    std::vector<std::pair<HexEval, HexPoint> > mvsc;
+    //std::vector<std::pair<HexEval, HexPoint> > mvsc;
+    std::vector<HexPoint> sortedChildren;
     for (BitsetIterator it(childrenBitset); it; ++it)
     {
-        HexEval score = -resist.Score(*it);
-        mvsc.push_back(std::make_pair(-score, *it));
+    	sortedChildren.push_back(*it);
+        /*HexEval score = -resist.Score(*it);
+        mvsc.push_back(std::make_pair(-score, *it));*/
     }
-    stable_sort(mvsc.begin(), mvsc.end());
-    std::vector<HexPoint> sortedChildren;
-    for (size_t i = 0; i < mvsc.size(); ++i)
-        sortedChildren.push_back(mvsc[i].second);
+    //stable_sort(mvsc.begin(), mvsc.end());
+    //std::vector<HexPoint> sortedChildren;
+    /*for (size_t i = 0; i < mvsc.size(); ++i)
+        sortedChildren.push_back(mvsc[i].second);*/
     data.m_bestMove = sortedChildren[0];
     data.m_children.SetChildren(sortedChildren);
     return 1;

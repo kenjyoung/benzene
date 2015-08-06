@@ -207,9 +207,12 @@ void DfpnCommands::CmdSolveState(HtpCommand& cmd)
 {
 	SgTimer timer;
     cmd.CheckNuArgLessEqual(3);
-    HexColor colorToMove = m_game.Board().WhoseTurn();
+    HexColor colorToMove;
     if (cmd.NuArg() >= 1)
-        colorToMove = HtpUtil::ColorArg(cmd, 0);
+    	colorToMove = HtpUtil::ColorArg(cmd, 0);
+    else
+    	colorToMove = m_game.Board().WhoseTurn();
+
     // DfpnBounds::MAX_WORK cannot be used as an argument to ArgMinMax()
     // directly, because it is an integral constant class member that is not
     // defined anywhere and arguments to ArgMinMax() are passed by reference.
