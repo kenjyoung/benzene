@@ -539,7 +539,7 @@ void VCS::Build(VCBuilderParam& param,
     m_brd = &m_groups->Board();
     Reset();
 
-    ComputeCapturedSets(patterns);
+    //ComputeCapturedSets(patterns);
     AddBaseVCs();
     //disabled for rex, can add in later if confident they are valid
     if (m_param->use_patterns)
@@ -1019,9 +1019,9 @@ void VCS::AndFull(HexPoint x, HexPoint y, bitset_t carrier)
     if (!m_fulls[x][y]->TrySetProcessed(carrier))
         return;
 
-    bitset_t xyCapturedSet = m_capturedSet[x];
-    if(!(m_capturedSet[x]&m_capturedSet[y]).any())
-    	xyCapturedSet|=m_capturedSet[y];
+    bitset_t xyCapturedSet;// = m_capturedSet[x];
+    /*if(!(m_capturedSet[x]&m_capturedSet[y]).any())
+    	xyCapturedSet|=m_capturedSet[y];*/
     AndFull(x, y, carrier, m_brd->GetColor(y), xyCapturedSet);
     AndFull(y, x, carrier, m_brd->GetColor(x), xyCapturedSet);
 }
@@ -1046,8 +1046,8 @@ inline void VCS::AndFullEmptyFull(HexPoint x, HexPoint z, bitset_t carrier,
         BenzeneAssert(y == m_groups->CaptainOf(y));
         BenzeneAssert(x != y && z != y);
         BenzeneAssert(!carrier.test(y));
-        if(!(xzCapturedSet&m_capturedSet[y]).any())
-        	xzCapturedSet |= m_capturedSet[y];
+        /*if(!(xzCapturedSet&m_capturedSet[y]).any())
+        	xzCapturedSet |= m_capturedSet[y];*/
         AndFullEmptyFull(x, z, y, carrier, xzCapturedSet);
     }
 }
@@ -1057,8 +1057,7 @@ inline void VCS::AndFullEmptyFull(HexPoint x, HexPoint z, HexPoint y,
 {
     AndList* zy_fulls = m_fulls[z][y];
     BenzeneAssert(zy_fulls);
-    if (!BitsetUtil::IsSubsetOf(zy_fulls->GetIntersection() & carrier,
-        xyCapturedSet))
+    if ((zy_fulls->GetIntersection() & carrier).any())
         return;
 
     VCAnd vcAnd(*this, x, y, xyCapturedSet, carrier, zy_fulls);
@@ -1099,8 +1098,8 @@ inline void VCS::AndFullStoneFull(HexPoint x, HexPoint z, bitset_t carrier,
         BenzeneAssert(y == m_groups->CaptainOf(y));
         BenzeneAssert(x != y && z != y);
         BenzeneAssert(!carrier.test(y));
-        if(!(xzCapturedSet&m_capturedSet[y]).any())
-                	xzCapturedSet |= m_capturedSet[y];
+        /*if(!(xzCapturedSet&m_capturedSet[y]).any())
+                	xzCapturedSet |= m_capturedSet[y];*/
         AndFullStoneFull(x, z, y, carrier, xzCapturedSet);
     }
 }
@@ -1110,8 +1109,7 @@ inline void VCS::AndFullStoneFull(HexPoint x, HexPoint z, HexPoint y,
 {
     AndList* zy_fulls = m_fulls[z][y];
     BenzeneAssert(zy_fulls);
-    if (!BitsetUtil::IsSubsetOf(zy_fulls->GetIntersection() & carrier,
-        xyCapturedSet))
+    if ((zy_fulls->GetIntersection() & carrier).any())
         return;
 
     VCAnd vcAnd(*this, x, y, xyCapturedSet, carrier, zy_fulls);
@@ -1180,17 +1178,17 @@ vector<bitset_t> VCS::VC2Or(CarrierList semis, HexPoint x, HexPoint y, const bit
 		CarrierList::Iterator j(i);
 		for (++j; j; ++j){
 			if(!j.Old()){
-				bitset_t capturedSet;
+				//bitset_t capturedSet;
 				bitset_t I = i.Carrier()&j.Carrier();
-		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
+		        /*if (!BitsetUtil::IsSubsetOf(I, capturedSet))
 		            capturedSet |= xCapturedSet;
 		        if((xCapturedSet&yCapturedSet).any())
 		        	capturedSet.reset();
 		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
-		            capturedSet |= yCapturedSet;
-		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
+		            capturedSet |= yCapturedSet;*/
+		        if (I.any())
 		            continue;
-				bitset_t new_con = i.Carrier()|j.Carrier()|capturedSet;
+				bitset_t new_con = i.Carrier()|j.Carrier();
 				res.push_back(new_con);
 
 			}
