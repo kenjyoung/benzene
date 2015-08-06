@@ -114,8 +114,8 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 	consider-= inf.Dominated();
 	//in rex symmetric boards are only first player wins for even numbers of empty cells
 	//else they are first player losses
-	if(brd.GetPosition().GetEmpty().count()%2 == 1)
-		consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
+	/*if(brd.GetPosition().GetEmpty().count()%2 == 1)
+		consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);*/
 	if (brd.GetPosition().IsSelfRotation())
 	        consider = RemoveRotations(brd.GetPosition(), consider);
     return consider;
