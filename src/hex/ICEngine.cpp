@@ -568,7 +568,7 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
 
         // search for black captured cells; if some are found,
         // fill them in and go back to look for more dead. 
-        {
+        /*{
             bitset_t black;
             if (HexColorSetUtil::InSet(BLACK, colors_to_capture))
                 black = FindCaptured(pastate, BLACK, brd.GetEmpty());
@@ -596,7 +596,7 @@ std::size_t ICEngine::ComputeDeadCaptured(Groups& groups, PatternState& pastate,
                 pastate.Update(white);
                 continue;
             }
-        }
+        }*/
         // did not find any fillin, so abort.
         break;
     }
