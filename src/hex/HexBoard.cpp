@@ -124,14 +124,9 @@ void HexBoard::HandleVCDecomposition(HexColor color_to_move)
             {
                 LogFine() << "Decomposition " << decompositions << ": for " 
 			  << *c << ".\n" << m_brd.Write(captured) << '\n';
-                if(captured.count()%2 == 0){
-                	AddStones(*c, captured, color_to_move);
-                	m_inf.AddCaptured(*c, captured);
-                }
-                else{
-                	break;
-                }
-            
+                AddStones(*c, captured, color_to_move);
+                m_inf.AddCaptured(*c, captured);
+
                 LogFine() << "After decomposition " << decompositions 
 			  << ": " << m_brd << '\n';
                 
