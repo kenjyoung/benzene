@@ -395,21 +395,23 @@ void Digraph<T>::DFS(int& step,
                      std::map<T, int>& finished,
                      std::set<T>& visited) const
 {
-    finished[vertex] = -1; // mark as expanded, but not finished. 
+	if(finished[vertex] == 0){
+		finished[vertex] = -1; // mark as expanded, but not finished.
 
-    // visit children in order determined by tiebreaker
-    OrderedChildren children;
-    OrderChildren(m_out[vertex], tiebreaker, finished, children);
+		// visit children in order determined by tiebreaker
+		OrderedChildren children;
+		OrderChildren(m_out[vertex], tiebreaker, finished, children);
 
-    typename OrderedChildren::iterator it;
-    for (it = children.begin(); it != children.end(); ++it) {
-        const T& child = it->second;
-        DFS(++step, child, tiebreaker, finished, visited);
-    }
+		typename OrderedChildren::iterator it;
+		for (it = children.begin(); it != children.end(); ++it) {
+			const T& child = it->second;
+			DFS(++step, child, tiebreaker, finished, visited);
+		}
 
-    // mark vertex as finished, add it to the set of visited vertices
-    finished[vertex] = ++step;
-    visited.insert(vertex);
+		// mark vertex as finished, add it to the set of visited vertices
+		finished[vertex] = ++step;
+		visited.insert(vertex);
+	}
 }
 
 template<typename T>
