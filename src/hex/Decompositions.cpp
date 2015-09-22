@@ -159,7 +159,7 @@ bool Decompositions::Find(const HexBoard& brd, HexColor color,
             for (CarrierList::Iterator it(cons.GetFullCarriers(g1->first, g2->first));
                  it; ++it)
             {
-		if (BitsetUtil::IsSubsetOf(it.Carrier(), decompArea))
+		if (BitsetUtil::IsSubsetOf(it.Carrier(), decompArea) && captured.count()%2 == 0)
                 {
 		    captured = it.Carrier();
 		    return true;
