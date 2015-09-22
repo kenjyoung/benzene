@@ -1182,8 +1182,6 @@ vector<bitset_t> VCS::VC2Or(CarrierList semis, HexPoint x, HexPoint y, const bit
 				bitset_t I = i.Carrier()&j.Carrier();
 		        /*if (!BitsetUtil::IsSubsetOf(I, capturedSet))
 		            capturedSet |= xCapturedSet;
-		        if((xCapturedSet&yCapturedSet).any())
-		        	capturedSet.reset();
 		        if (!BitsetUtil::IsSubsetOf(I, capturedSet))
 		            capturedSet |= yCapturedSet;*/
 		        if (I.any())
