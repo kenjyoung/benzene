@@ -739,7 +739,7 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
     //ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
-    /*//bool considerCliqueCutset = true;
+    bool considerCliqueCutset = true;
     while(true)
     {
         std::size_t count;
@@ -761,17 +761,17 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
                                       colors_to_capture);
             count += FillInVulnerable(color, groups, pastate, out, 
                                       colors_to_capture);*/
-            /*if (0 == count)
+            if (0 == count)
                 break;
             considerCliqueCutset = true;
         }
-        if (m_iterative_dead_regions && considerCliqueCutset)
-            count = CliqueCutsetDead(groups, pastate, out);
+        /*if (m_iterative_dead_regions && considerCliqueCutset)
+            count = CliqueCutsetDead(groups, pastate, out);*/
         if (0 == count)
             break;
         considerCliqueCutset = false;
     }
-    if (!m_iterative_dead_regions)
+    /*if (!m_iterative_dead_regions)
         CliqueCutsetDead(groups, pastate, out);*/
 }
 
