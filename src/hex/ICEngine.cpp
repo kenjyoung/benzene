@@ -738,8 +738,9 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
 {
     out.Clear();
     //only filling captured and dead cells (in even number) for rex (for now)
-    ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
+    //ComputeDeadCaptured(groups, pastate, out, colors_to_capture);
     //bool considerCliqueCutset = true;
+
     while(true)
     {
         std::size_t count;
