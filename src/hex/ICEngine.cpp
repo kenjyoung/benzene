@@ -749,9 +749,9 @@ void ICEngine::ComputeFillin(HexColor color, Groups& groups,
             count = 0;
             count += ComputeDeadCaptured(groups, pastate, out,
                                          colors_to_capture);
-            count += FillInMutualFillin(groups, pastate, color, out,
+            //count += FillInMutualFillin(groups, pastate, color, out,
                                                     colors_to_capture);
-            count += FillInMutualFillin(groups, pastate, !color, out,
+            //count += FillInMutualFillin(groups, pastate, !color, out,
                                                     colors_to_capture);
             /*count += FillinPermanentlyInferior(groups, pastate, color, out,
                                                colors_to_capture);
