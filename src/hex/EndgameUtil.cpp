@@ -116,6 +116,15 @@ bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
     return ret;
 }
 
+bitset_t GetSemiKeys(const HexBoard& brd, HexColor color){
+	CarrierList semis = brd.Cons(color).GetSemiCarriers();
+	bitset_t semikeys;
+	for(CarrierList::Iterator it(semis); it; ++it){
+		semikeys|=brd.Cons(color).SemiKey(it.Carrier(), HexPointUtil::colorEdge1(color), HexPointUtil::colorEdge2(color));
+	}
+	return semikeys;
+}
+
 bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 {
 	bitset_t consider;
@@ -141,9 +150,12 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 			return consider;
 		}
 	}
+
 	const InferiorCells& inf = brd.GetInferiorCells();
 	consider = brd.GetPosition().GetEmpty();
 	consider-= inf.Dominated();
+	consider-= GetSemiKeys(brd, color);
+
 	//in rex symmetric boards are first player wins for even numbers of empty cells
 	//else they are first player losses
 	if(brd.GetPosition().GetEmpty().count()%2 == 1)
@@ -323,7 +335,7 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
     if (brd.Cons(color).SmallestFullCarrier(carrier))
     {
         proof = carrier | StonesInProof(brd, !color);
-	return true;
+        return true;
     }
 
     if(brd.GetPosition().GetEmpty().count()%2==1){
