@@ -1138,7 +1138,7 @@ void DfpnSolver::SelectChild(size_t& bestIndex, DfpnBounds& childMaxBounds,
     bool useDelta2 = true;
     if (cand != bestIndex)
     {
-        childMaxBounds.delta = std::min(maxBounds.phi, GetDeltaBound(delta1));
+        childMaxBounds.delta = maxBounds.phi;
         if (bestIndex >= maxChildIndex ||
             childrenBounds[bestIndex].GetBounds().delta >= childMaxBounds.delta)
             bestIndex = cand;
