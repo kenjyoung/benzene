@@ -669,7 +669,7 @@ size_t DfpnSolver::TopMid(const DfpnBounds& maxBounds,
                           DfpnData& data, DfpnBounds& vBounds,
                           TopMidData* parent, bool& midCalled)
 {
-    BenzeneAssert(!midCalled);
+    BenzeneAssert(!(midCalled && (Threads()>1) ));
     size_t depth = m_history->Depth();
     if (!maxBounds.GreaterThan(vBounds))
         return 0;
@@ -726,7 +726,7 @@ size_t DfpnSolver::TopMid(const DfpnBounds& maxBounds,
     bool first = true;
     while (true)
     {
-        if (first || midCalled)
+        if (first || (midCalled && (Threads()>1) ))
         {
             LookupChildrenDB(d.childrenData, data.m_children);
             LookupChildren(depth + 1, d.virtualBounds,
@@ -743,7 +743,7 @@ size_t DfpnSolver::TopMid(const DfpnBounds& maxBounds,
         size_t virtualMaxChildIndex = ComputeMaxChildIndex(d.virtualBounds);
         UpdateBounds(vBounds, d.virtualBounds, virtualMaxChildIndex);
 
-        if (midCalled || !maxBounds.GreaterThan(vBounds))
+        if ((midCalled && (Threads()>1) ) || !maxBounds.GreaterThan(vBounds))
             break;
 
         if (CheckAbort())
