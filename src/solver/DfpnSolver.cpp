@@ -765,6 +765,20 @@ size_t DfpnSolver::TopMid(const DfpnBounds& maxBounds,
         data.m_children.UndoMove(d.bestIndex, *m_state);
 
         UpdateStatsOnWin(d.childrenData, d.bestIndex, data.m_work + work);
+
+        bitset_t toPrune =
+            ChildrenToPrune(data.m_children, data.m_bestMove,
+                            d.childrenData[d.bestIndex].m_maxProofSet);
+        if (toPrune.any())
+        {
+            VecPrune(data.m_children.m_children, toPrune);
+            d.bestIndex = data.m_children.MoveIndex(data.m_bestMove);
+            VecPrune(d.childrenData, toPrune);
+            if (!midCalled)
+                VecPrune(d.virtualBounds, toPrune);
+            if (m_useGuiFx && depth == 0)
+                m_guiFx.SetChildren(data.m_children, d.childrenData);
+        }
     }
 
     UpdateSolvedBestMove(data, d.childrenData);
@@ -1026,6 +1040,17 @@ size_t DfpnSolver::MID(const DfpnBounds& maxBounds,
 
         UpdateStatsOnWin(childrenData, bestIndex, data.m_work + work);
 
+        bitset_t toPrune =
+            ChildrenToPrune(data.m_children, data.m_bestMove,
+                            childrenData[bestIndex].m_maxProofSet);
+        if (toPrune.any())
+        {
+            VecPrune(data.m_children.m_children, toPrune);
+            bestIndex = data.m_children.MoveIndex(data.m_bestMove);
+            VecPrune(childrenData, toPrune);
+            if (m_useGuiFx && m_history->Depth() == 0)
+                m_guiFx.SetChildren(data.m_children, childrenData);
+        }
     } while (!m_thread_path_solved[*m_thread_id] && !CheckAbort());
 
     if (m_useGuiFx && depth == 0)
@@ -1110,15 +1135,22 @@ void DfpnSolver::SelectChild(size_t& bestIndex, DfpnBounds& childMaxBounds,
             break;
     }
     BenzeneAssert(delta1 < DfpnBounds::INFTY);
+    bool useDelta2 = true;
     if (cand != bestIndex)
     {
+        childMaxBounds.delta = maxBounds.phi;
         if (bestIndex >= maxChildIndex ||
             childrenBounds[bestIndex].GetBounds().delta >= childMaxBounds.delta)
             bestIndex = cand;
+        else
+            useDelta2 = false;
     }
-	childMaxBounds.delta =
-		delta2 < DfpnBounds::INFTY ? GetDeltaBound(delta2) : delta2;
-	childMaxBounds.delta = std::min(maxBounds.phi, childMaxBounds.delta);
+    if (useDelta2)
+    {
+        childMaxBounds.delta =
+            delta2 < DfpnBounds::INFTY ? GetDeltaBound(delta2) : delta2;
+        childMaxBounds.delta = std::min(maxBounds.phi, childMaxBounds.delta);
+    }
 
     // Compute maximum bound for child
     const DfpnBounds childBounds(childrenBounds[bestIndex].GetBounds());
