@@ -22,7 +22,7 @@ def testallwins(program, size, opening, expected_wins):
 		return(False, false_losses, false_wins)
 
 mohex = Program("../mohex/./mohex 2>/dev/null", True)
-mohex.sendCommand("param_dfpn threads 1")
+mohex.sendCommand("param_dfpn threads 4")
 with open("rex5x5opening.dat") as f:
 	lines = f.readlines()
 	cases = [[line.split(':')[0],line.split(':')[1].split()] for line in lines]
