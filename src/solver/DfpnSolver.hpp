@@ -659,6 +659,8 @@ private:
     boost::mutex m_backup_mutex;
     boost::condition_variable m_nothingToSearch_cond;
     boost::shared_mutex m_tt_mutex;
+    std::map<SgHashCode, DfpnBounds> m_topmid_tt;
+
 
     DfpnStates* m_positions;
     VirtualBoundsTT m_vtt;
