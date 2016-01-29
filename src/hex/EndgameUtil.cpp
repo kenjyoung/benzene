@@ -81,6 +81,29 @@ bitset_t ComputeLossesViaStrategyStealingArgument(const StoneBoard& brd,
     return ret;
 }
 
+bitset_t ComputeWinsViaStrategyStealingArgument(const StoneBoard& brd,
+        HexColor color)
+{
+	bitset_t ret;
+    if ((brd.Width() == brd.Height())
+        && (brd.GetPlayed(!color).count() - brd.GetPlayed(color).count() == 1))
+    {
+        bitset_t mirror1
+            = BoardUtil::Mirror(brd.Const(), brd.GetPlayed(!color))
+            - brd.GetPlayed(color);
+        if (mirror1.count() == 1)
+            ret |= mirror1;
+        bitset_t mirror2 =
+            BoardUtil::Mirror(brd.Const(), BoardUtil::Rotate(brd.Const(),
+                                                  brd.GetPlayed(!color)))
+            - brd.GetPlayed(color);
+        if (mirror2.count() == 1)
+            ret |= mirror2;
+        ret &= brd.GetEmpty();
+    }
+    return ret;
+}
+
 bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
 {
     bitset_t ret;
@@ -91,6 +114,15 @@ bitset_t RemoveRotations(const StoneBoard& brd, const bitset_t& consider)
             ret.set(*it);
     }
     return ret;
+}
+
+bitset_t GetSemiKeys(const HexBoard& brd, HexColor color){
+	CarrierList semis = brd.Cons(color).GetSemiCarriers();
+	bitset_t semikeys;
+	for(CarrierList::Iterator it(semis); it; ++it){
+		semikeys|=brd.Cons(color).SemiKey(it.Carrier(), HexPointUtil::colorEdge1(color), HexPointUtil::colorEdge2(color));
+	}
+	return semikeys;
 }
 
 bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
@@ -109,10 +141,22 @@ bitset_t ComputeConsiderSet(const HexBoard& brd, HexColor color)
 		consider.set(dead._Find_first());
 		return consider;
 	}
+	//in rex symmetric boards are second player wins for odd numbers of empty cells
+	if(brd.GetPosition().GetEmpty().count()%2 == 0){
+		bitset_t symmetry_wins = ComputeWinsViaStrategyStealingArgument(brd.GetPosition(), color);
+		if(symmetry_wins.any()){
+			consider = bitset_t();
+			consider.set(symmetry_wins._Find_first());
+			return consider;
+		}
+	}
+
 	const InferiorCells& inf = brd.GetInferiorCells();
 	consider = brd.GetPosition().GetEmpty();
 	consider-= inf.Dominated();
-	//in rex symmetric boards are only first player wins for even numbers of empty cells
+	consider-= GetSemiKeys(brd, color);
+
+	//in rex symmetric boards are first player wins for even numbers of empty cells
 	//else they are first player losses
 	if(brd.GetPosition().GetEmpty().count()%2 == 1)
 		consider-=ComputeLossesViaStrategyStealingArgument(brd.GetPosition(), color);
@@ -269,9 +313,9 @@ bool EndgameUtil::IsWonGame(const HexBoard& brd, HexColor color,
 			proof = carrier | StonesInProof(brd, color);
 			return true;
 		}
-		/*//if even number of cells remain and board is color symmetric we win
+		//if even number of cells remain and board is color symmetric we win
 		if(CheckColorSymmetry(brd.GetPosition()))
-			return true;*/
+			return true;
 
     }
     return false;
@@ -291,7 +335,7 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
     if (brd.Cons(color).SmallestFullCarrier(carrier))
     {
         proof = carrier | StonesInProof(brd, !color);
-	return true;
+        return true;
     }
 
     if(brd.GetPosition().GetEmpty().count()%2==1){
@@ -301,8 +345,8 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
 			proof = carrier | StonesInProof(brd, color);
 			return true;
 		}
-		/*if(CheckColorSymmetry(brd.GetPosition()))
-			return true;*/
+		if(CheckColorSymmetry(brd.GetPosition()))
+			return true;
     }
     return false;
 }
