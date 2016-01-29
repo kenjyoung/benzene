@@ -169,8 +169,11 @@ bool SolverDB<HASH, DB, DATA>::PutDB(const HexState& state, const DATA& data)
 template<class HASH, class DB, class DATA>
 bool SolverDB<HASH, DB, DATA>::GetHT(const HexState& state, DATA& data)
 {
-    if (UseHashTable())
-        return m_hashTable->Lookup(state.Hash(), &data);
+    if (UseHashTable()){
+        bool hit = m_hashTable->Lookup(state.Hash(), &data);
+    	if(hit) data.UpdateAccessTime();
+    	return hit;
+    }
     return false;
 }
 
