@@ -34,8 +34,8 @@ class Program:
     def getName(self):
         name = "?"
         try:
-            name = string.strip(self.sendCommand("name"))
-            version = string.strip(self.sendCommand("version"))
+            name = self.sendCommand("name").strip()
+            version = self.sendCommand("version").strip()
             name += " " + version
         except Program.CommandDenied:
             pass
@@ -69,10 +69,10 @@ class Program:
             if not done:
                 answer += line
         if answer[0] != '=':
-            self._denyReason = string.strip(answer[2:])
+            self._denyReason = answer[2:].strip()
             raise Program.CommandDenied
         if numberLines == 1:
-            return string.strip(answer[1:])
+            return answer[1:].strip()
         return answer[2:]
 
     def _programDied(self):
