@@ -8,7 +8,7 @@ ENDCOLOR = '\033[0m'
 
 mohex = Program("../mohex/./mohex 2>/dev/null", False)
 mohex.sendCommand("param_dfpn threads 4")
-mohex.sendCommand("boardsize 5")
+mohex.sendCommand("boardsize 6")
 
 mohex.sendCommand("play white d2")
 start = time.time()
