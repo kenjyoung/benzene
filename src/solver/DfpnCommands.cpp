@@ -119,6 +119,8 @@ void DfpnCommands::CmdParam(HtpCommand& cmd)
             << m_solver.GuiFxDeepBounds() << '\n'
             << "[string] timelimit "
             << m_solver.Timelimit() << '\n'
+			<< "[bool] usetimestamp "
+			<< m_solver.UseTimestampForCollisions() << '\n'
             << "[string] tt_size "
             << ((m_tt.get() == 0) ? 0 : m_tt->MaxHash()) << '\n'
             << "[string] widening_base "
@@ -153,6 +155,8 @@ void DfpnCommands::CmdParam(HtpCommand& cmd)
             m_solver.SetGuiFxDeepBounds(cmd.Arg<bool>(1));
         else if (name == "timelimit")
             m_solver.SetTimelimit(cmd.ArgMin<float>(1, 0.0));
+        else if (name == "usetimestamp")
+        	m_solver.SetUseTimestampForCollisions(cmd.Arg<bool>(1));
 	else if (name == "tt_size")
 	{
 	    int size = cmd.ArgMin<int>(1, 0);
