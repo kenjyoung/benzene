@@ -52,6 +52,9 @@ struct DfsData
     
     bool IsValid() const;
 
+    //not implemented for Dfs
+    void UpdateAccessTime(){};
+
     void Invalidate();
 
     /** Always returns true.
