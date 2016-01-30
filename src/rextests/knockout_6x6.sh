@@ -11,7 +11,7 @@ do
 			echo "Make failure!\n"
 			break
 	fi
-	python3 knockout.py
+	python3 knockout_6x6.py
 	echo "\n"
 done
 git checkout master >/dev/null 2>/dev/null
