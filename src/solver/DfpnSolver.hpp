@@ -234,6 +234,8 @@ inline HexPoint DfpnChildren::FirstMove(std::size_t index) const
 class DfpnData
 {
 public:
+	static bool m_useTimeStamp;
+
     DfpnBounds m_bounds;
 
     DfpnChildren m_children;
@@ -317,10 +319,15 @@ inline const DfpnBounds& DfpnData::GetBounds() const
 
 inline bool DfpnData::IsBetterThan(const DfpnData& data) const
 {
-	time_t curr_time = time(NULL);
-	time_t this_time = (curr_time-m_accessTime)==0 ? 1:(curr_time-m_accessTime);
-	time_t other_time = (curr_time-data.m_accessTime)==0 ? 1:(curr_time-data.m_accessTime);
-    return m_work/this_time > data.m_work/other_time;
+	if(m_useTimeStamp){
+		time_t curr_time = time(NULL);
+		time_t this_time = (curr_time-m_accessTime)==0 ? 1:(curr_time-m_accessTime);
+		time_t other_time = (curr_time-data.m_accessTime)==0 ? 1:(curr_time-data.m_accessTime);
+		return m_work/this_time > data.m_work/other_time;
+	}
+	else{
+		return m_work > data.m_work;
+	}
 }
 
 inline bool DfpnData::IsValid() const
@@ -509,8 +516,14 @@ public:
     /** Dumps output about root state what gui can display. */
     bool UseGuiFx() const;
 
+    /**Hash collision resolution method with or without timestamp of last access.*/
+    bool UseTimestampForCollisions() const;
+
     /** See UseGuiFx() */
     void SetUseGuiFx(bool enable);
+
+    /** See UseTimestampForCollisions()*/
+    void SetUseTimestampForCollisions(bool enable);
 
     /** For moves from pv display bounds at given depth
         rather than at root. */
@@ -879,6 +892,15 @@ inline bool DfpnSolver::UseGuiFx() const
 inline void DfpnSolver::SetUseGuiFx(bool enable)
 {
     m_useGuiFx = enable;
+}
+
+inline void DfpnSolver::SetUseTimestampForCollisions(bool enable)
+{
+	DfpnData::m_useTimeStamp = enable;
+}
+
+inline bool DfpnSolver::UseTimestampForCollisions() const{
+	return DfpnData::m_useTimeStamp;
 }
 
 inline double DfpnSolver::Timelimit() const
