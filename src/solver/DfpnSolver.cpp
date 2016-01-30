@@ -27,7 +27,7 @@ using std::ceil;
 /** Current version of the dfpn database.
     Update this if DfpnData changes to prevent old out-of-date
     databases from being loaded. */
-const std::string DfpnDB::DFPN_DB_VERSION("BENZENE_DFPN_DB_VER_0002");
+const std::string DfpnDB::DFPN_DB_VERSION("BENZENE_DFPN_DB_VER_0003");
 
 //----------------------------------------------------------------------------
 
@@ -743,9 +743,13 @@ size_t DfpnSolver::TopMid(const DfpnBounds& maxBounds,
         size_t virtualMaxChildIndex = ComputeMaxChildIndex(d.virtualBounds);
         UpdateBounds(vBounds, d.virtualBounds, virtualMaxChildIndex);
 
-        if (midCalled || !maxBounds.GreaterThan(vBounds))
+        if (midCalled)
             break;
-
+        if (!maxBounds.GreaterThan(vBounds))
+        {
+            m_topmid_tt[d.hash] = vBounds;
+            break;
+        }
         if (CheckAbort())
             break;
 
@@ -813,6 +817,7 @@ void DfpnSolver::RunThread(int id, const DfpnBounds& maxBounds,
 
         boost::unique_lock<boost::mutex> lock(m_topmid_mutex);
 
+        m_topmid_tt.clear();
         DBRead(*m_state, data);
         vBounds = data.m_bounds;
         m_vtt.Lookup(0, m_state->Hash(), vBounds);
@@ -1239,8 +1244,14 @@ void DfpnSolver::LookupChildren(size_t depth,
     for (size_t i = 0; i < children.Size(); ++i)
     {
         virtualBounds[i] = childrenData[i].GetBounds();
+        if (virtualBounds[i].IsSolved())
+            continue;
         children.PlayMove(i, *m_state);
-        m_vtt.Lookup(depth, m_state->Hash(), virtualBounds[i]);
+        map<SgHashCode, DfpnBounds>::const_iterator it = m_topmid_tt.find(m_state->Hash());
+        if (it == m_topmid_tt.end())
+            m_vtt.Lookup(depth, m_state->Hash(), virtualBounds[i]);
+        else
+            virtualBounds[i] = it->second;
         children.UndoMove(i, *m_state);
     }
 }
