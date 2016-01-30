@@ -809,7 +809,7 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
                             - out.Vulnerable()
                             - out.Reversible();
         FindDominated(pastate, color, consider, out);
-    }
+    }*/
 
     if (m_backup_opponent_dead) 
     {
@@ -820,7 +820,7 @@ void ICEngine::ComputeInferiorCells(HexColor color, Groups& groups,
             LogFine() << "Found " << found 
                       << " cells vulnerable to opponent moves.\n";
         }
-    }*/
+    }
     
     LogFine() << "  " << timer.GetTime() << "s to find inferior cells.\n";
 
@@ -849,6 +849,7 @@ std::size_t ICEngine::BackupOpponentDead(HexColor color,
 
     bitset_t reversible = out.Reversible();
     bitset_t dominated = out.Dominated();
+    bitset_t dead = out.Dead();
 
     std::size_t found = 0;
     for (BitsetIterator p(board.GetEmpty()); p; ++p) 
@@ -870,12 +871,10 @@ std::size_t ICEngine::BackupOpponentDead(HexColor color,
             /** @todo Add if already vulnerable? */
             if (!out.Vulnerable().test(*d)
                 && !reversible.test(*d)
-                && !dominated.test(*d)) 
+                && !dominated.test(*d)
+				&& !dead.test(*d))
             {
-                bitset_t carrier = filled;
-                carrier.reset(*d);
-                carrier.reset(*p);
-                out.AddVulnerable(*d, VulnerableKiller(*p, carrier));
+                out.AddDominated(*p, *d);
                 found++;
             }
         }

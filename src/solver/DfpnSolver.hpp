@@ -242,6 +242,8 @@ public:
     
     size_t m_work;
 
+    time_t m_accessTime;
+
     bitset_t m_maxProofSet;
 
     float m_evaluationScore;
@@ -258,6 +260,8 @@ public:
     // @{
 
     bool IsValid() const;
+
+    void UpdateAccessTime();
 
     void Invalidate();
     
@@ -289,6 +293,7 @@ inline DfpnData::DfpnData()
     : m_work(0),
       m_isValid(false)
 {
+	UpdateAccessTime();
 }
 
 inline std::string DfpnData::Print() const
@@ -312,12 +317,19 @@ inline const DfpnBounds& DfpnData::GetBounds() const
 
 inline bool DfpnData::IsBetterThan(const DfpnData& data) const
 {
-    return m_work > data.m_work;
+	time_t curr_time = time(NULL);
+	time_t this_time = (curr_time-m_accessTime)==0 ? 1:(curr_time-m_accessTime);
+	time_t other_time = (curr_time-data.m_accessTime)==0 ? 1:(curr_time-data.m_accessTime);
+    return m_work/this_time > data.m_work/other_time;
 }
 
 inline bool DfpnData::IsValid() const
 {
     return m_isValid;
+}
+
+inline void DfpnData::UpdateAccessTime(){
+	m_accessTime = time(NULL);
 }
 
 inline void DfpnData::Validate()
@@ -659,6 +671,8 @@ private:
     boost::mutex m_backup_mutex;
     boost::condition_variable m_nothingToSearch_cond;
     boost::shared_mutex m_tt_mutex;
+    std::map<SgHashCode, DfpnBounds> m_topmid_tt;
+
 
     DfpnStates* m_positions;
     VirtualBoundsTT m_vtt;
@@ -772,8 +786,8 @@ private:
                   DfpnData& data, DfpnBounds& vBounds,
                   TopMidData* parent, bool& midCalled);
 
-    size_t MID(const DfpnBounds& maxBounds, const size_t workBound,
-               DfpnData& data);
+    size_t MID(const DfpnBounds& maxBounds,
+                           const size_t workBound, DfpnData& data);
 
     size_t CreateData(DfpnData& data);
 
