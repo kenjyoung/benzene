@@ -424,6 +424,8 @@ bool DfpnData::ReplaceBy(const DfpnData& data) const
 
 //----------------------------------------------------------------------------
 
+bool DfpnData::m_useTimeStamp;
+
 DfpnSolver::DfpnSolver()
     : m_positions(0),
       m_useGuiFx(false),
@@ -446,6 +448,7 @@ DfpnSolver::DfpnSolver()
       m_winningEvaluation(-2.5, 2.0, 45),
       m_losingEvaluation(-2.5, 2.0, 45)
 {
+	DfpnData::m_useTimeStamp = false;
 }
 
 DfpnSolver::~DfpnSolver()
