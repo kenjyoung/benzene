@@ -852,9 +852,17 @@ size_t DfpnSolver::CreateData(DfpnData& data)
     if (data.IsValid())
         return 0;
 
-    HexColor colorToMove = m_state->ToPlay();
+    bool symmetry_win = false;
+    bool symmetry_lose = false;
 
+    HexColor colorToMove = m_state->ToPlay();
     m_workBoard->GetPosition().SetPosition(m_state->Position());
+    if(EndgameUtil::CheckColorSymmetry(m_workBoard.get()->GetPosition())){
+    	if(m_workBoard.get()->GetPosition().GetEmpty().count()%2 == 0 )
+    		symmetry_win = true;
+    	else
+    		symmetry_lose = true;
+    }
     m_workBoard->ComputeAll(colorToMove);
     ++m_numVCbuilds;
 
@@ -865,10 +873,10 @@ size_t DfpnSolver::CreateData(DfpnData& data)
     data.m_maxProofSet =
         ProofUtil::MaximumProofSet(*m_workBoard, colorToMove);
 
-    if (EndgameUtil::IsDeterminedState(*m_workBoard, colorToMove))
+    if (EndgameUtil::IsDeterminedState(*m_workBoard, colorToMove) || symmetry_win || symmetry_lose)
     {
         ++m_numTerminal;
-        if (EndgameUtil::IsWonGame(*m_workBoard, colorToMove))
+        if (EndgameUtil::IsWonGame(*m_workBoard, colorToMove) || symmetry_win)
             DfpnBounds::SetToWinning(data.m_bounds);
         else
             DfpnBounds::SetToLosing(data.m_bounds);
