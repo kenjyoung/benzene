@@ -857,12 +857,12 @@ size_t DfpnSolver::CreateData(DfpnData& data)
 
     HexColor colorToMove = m_state->ToPlay();
     m_workBoard->GetPosition().SetPosition(m_state->Position());
-    if(EndgameUtil::CheckColorSymmetry(m_workBoard.get()->GetPosition())){
+    /*if(EndgameUtil::CheckColorSymmetry(m_workBoard.get()->GetPosition())){
     	if(m_workBoard.get()->GetPosition().GetEmpty().count()%2 == 0 )
     		symmetry_win = true;
     	else
     		symmetry_lose = true;
-    }
+    }*/
     m_workBoard->ComputeAll(colorToMove);
     ++m_numVCbuilds;
 
