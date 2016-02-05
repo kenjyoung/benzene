@@ -48,15 +48,6 @@ using namespace benzene;
 
 /** Local functions. */
 namespace {
-bool CheckColorSymmetry(const StoneBoard& brd){
-	bitset_t black = brd.GetColor(BLACK);
-	bitset_t white_mirror1 = BoardUtil::Mirror(brd.Const(),brd.GetPlayed(WHITE));
-	bitset_t white_mirror2 = BoardUtil::Mirror(brd.Const(),BoardUtil::Rotate(brd.Const(),
-                                                  brd.GetPlayed(WHITE)));
-	if(white_mirror1 == black || white_mirror2 == black)
-		return true;
-	return false;
-}
 
 bitset_t ComputeLossesViaStrategyStealingArgument(const StoneBoard& brd,
                                                   HexColor color)
@@ -348,6 +339,16 @@ bool EndgameUtil::IsLostGame(const HexBoard& brd, HexColor color,
 			return true;
     }
     return false;
+}
+
+bool EndgameUtil::CheckColorSymmetry(const StoneBoard& brd){
+	bitset_t black = brd.GetColor(BLACK);
+	bitset_t white_mirror1 = BoardUtil::Mirror(brd.Const(),brd.GetPlayed(WHITE));
+	bitset_t white_mirror2 = BoardUtil::Mirror(brd.Const(),BoardUtil::Rotate(brd.Const(),
+                                                  brd.GetPlayed(WHITE)));
+	if(white_mirror1 == black || white_mirror2 == black)
+		return true;
+	return false;
 }
 
 bool EndgameUtil::IsDeterminedState(const HexBoard& brd, HexColor color, 
