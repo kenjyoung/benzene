@@ -41,6 +41,8 @@ namespace EndgameUtil
 
     bool IsDeterminedState(const HexBoard& brd, HexColor color);
 
+    bool CheckColorSymmetry(const StoneBoard& brd);
+
     /** Plays the "best" move in a determined state.  Assumes
         IsDetermined() returns true, but requires that
         brd.isGameOver() is false. That is, is, it cannot play a move
